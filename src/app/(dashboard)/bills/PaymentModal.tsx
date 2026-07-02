@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { processPayment } from './actions';
+import { formatRupees } from '@/lib/utils';
+
 
 export function PaymentModal({
     bill,
@@ -47,11 +49,12 @@ export function PaymentModal({
                         <strong>Bill Type:</strong> {bill.bill_type}
                     </p>
                     <p>
-                        <strong>Total Due:</strong> ${Number(bill.amount_due).toFixed(2)}
+                        <strong>Total Due:</strong> {formatRupees(bill.amount_due)}
                     </p>
                     <p>
-                        <strong>Remaining Balance:</strong> ${balance.toFixed(2)}
+                        <strong>Remaining:</strong> {formatRupees(balance)}
                     </p>
+
                 </div>
 
                 <form onSubmit={handleSave} className="space-y-4">
@@ -80,23 +83,13 @@ export function PaymentModal({
                             type="number"
                             step="0.01"
                             max={balance}
-                            defaultValue={balance.toFixed(2)}
+                            defaultValue={Math.round(balance)}
+
                             className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                         />
                         <p className="text-xs text-slate-500 mt-1">
                             This will be added to the total collected payments for this bill.
                         </p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Screenshot Proof (Optional)
-                        </label>
-                        <input
-                            name="screenshot"
-                            type="file"
-                            accept="image/*"
-                            className="w-full text-slate-900 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
                         <button

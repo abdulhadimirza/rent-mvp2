@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/server';
-import { LedgerClient } from './LedgerClient';
+import { BillsClient } from './BillsClient';
 
-export default async function LedgerPage(props: {
+export default async function BillsPage(props: {
     searchParams: Promise<{ status?: string; month?: string }>;
 }) {
     const searchParams = await props.searchParams;
@@ -31,14 +31,14 @@ export default async function LedgerPage(props: {
         <div className="space-y-8">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-                    Ledger
+                    Bills
                 </h2>
                 <p className="text-slate-500 mt-2">
-                    Track all bills and payments across your properties.
+                    Track all electricity, water, and gas bills across your properties.
                 </p>
             </div>
 
-            <LedgerClient bills={bills || []} />
+            <BillsClient bills={bills || []} />
         </div>
     );
 }

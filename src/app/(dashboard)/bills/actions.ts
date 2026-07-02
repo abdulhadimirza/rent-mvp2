@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/server';
 import { revalidatePath } from 'next/cache';
+import { formatRupees } from '@/lib/utils';
+
 
 export async function processPayment(formData: FormData) {
     const supabase = await createClient();
@@ -48,7 +50,7 @@ export async function processPayment(formData: FormData) {
 
     if (billError) return { error: billError.message };
 
-    revalidatePath('/ledger');
+    revalidatePath('/bills');
     revalidatePath('/dashboard');
     return { success: true };
 }
@@ -81,7 +83,8 @@ export async function sendWhatsAppReminder(billId: string) {
                     parameters: [
                         { type: 'text', text: tenant.name },
                         { type: 'text', text: bill.bill_type },
-                        { type: 'text', text: `$${bill.amount_due}` },
+                        { type: 'text', text: formatRupees(bill.amount_due) },
+
                         {
                             type: 'text',
                             text: new Date(bill.due_date).toLocaleDateString(),

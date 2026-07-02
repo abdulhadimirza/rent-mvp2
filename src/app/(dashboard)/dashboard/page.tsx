@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Users, TrendingUp } from 'lucide-react';
+import { formatRupees } from '@/lib/utils';
+
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -96,8 +98,9 @@ export default async function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-slate-900">
-                            Rs. {totalOutstanding.toFixed(2)}
+                            {formatRupees(totalOutstanding)}
                         </div>
+
                         <p className="text-xs text-slate-500 mt-1">
                             Across all unpaid bills
                         </p>
@@ -112,8 +115,9 @@ export default async function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-slate-900">
-                            Rs. {collectedRevenue.toFixed(2)}
+                            {formatRupees(collectedRevenue)}
                         </div>
+
                         <p className="text-xs text-slate-500 mt-1">
                             Payments received since {startOfMonth.toLocaleDateString()}
                         </p>
@@ -192,11 +196,12 @@ export default async function DashboardPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 font-semibold text-slate-900">
-                                                Rs. {item.balance.toFixed(2)}
+                                                {formatRupees(item.balance)}
                                             </td>
+
                                             <td className="px-6 py-4 text-right">
                                                 <a
-                                                    href={`/ledger?highlight=${item.id}`}
+                                                    href={`/bills?highlight=${item.id}`}
                                                     className="text-blue-600 hover:text-blue-800 font-medium text-sm"
                                                 >
                                                     View details

@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/server';
 import { TenantModals } from './TenantModals';
 import { Home } from 'lucide-react';
+import { formatRupees } from '@/lib/utils';
+
 
 export default async function TenantsPage() {
     const supabase = await createClient();
@@ -83,8 +85,9 @@ export default async function TenantsPage() {
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="font-semibold text-slate-900">
-                                                            Rs. {Number(tenant.rent_amount).toLocaleString()}
+                                                            {formatRupees(tenant.rent_amount)}
                                                         </p>
+
                                                         <p className="text-xs text-slate-500">
                                                             Due date: {tenant.due_date_day}
                                                         </p>
