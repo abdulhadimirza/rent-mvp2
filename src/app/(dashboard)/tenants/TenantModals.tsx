@@ -6,11 +6,11 @@ import { addProperty, addTenant, editProperty, editTenant } from './actions';
 export function TenantModals({ properties }: { properties: any[] }) {
     const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
     const [isTenantModalOpen, setTenantModalOpen] = useState(false);
-    
+
     // Edit Modal states
     const [isEditPropertyModalOpen, setEditPropertyModalOpen] = useState(false);
     const [isEditTenantModalOpen, setEditTenantModalOpen] = useState(false);
-    
+
     const [selectedPropertyId, setSelectedPropertyId] = useState('');
     const [selectedTenantId, setSelectedTenantId] = useState('');
 
@@ -45,15 +45,15 @@ export function TenantModals({ properties }: { properties: any[] }) {
         setLoading(false);
         setTenantModalOpen(false);
     }
-    
+
     async function handleEditProperty(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
-        
+
         const rawFormData = new FormData(e.currentTarget);
         const filteredFormData = new FormData();
         filteredFormData.append('id', selectedPropertyId);
-        
+
         let hasChanges = false;
         if (dirtyFields['name']) {
             filteredFormData.append('name', rawFormData.get('name') as string);
@@ -79,7 +79,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
         if (hasChanges) {
             await editProperty(filteredFormData);
         }
-        
+
         setLoading(false);
         setEditPropertyModalOpen(false);
         setSelectedPropertyId('');
@@ -88,11 +88,11 @@ export function TenantModals({ properties }: { properties: any[] }) {
     async function handleEditTenant(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
-        
+
         const rawFormData = new FormData(e.currentTarget);
         const filteredFormData = new FormData();
         filteredFormData.append('id', selectedTenantId);
-        
+
         let hasChanges = false;
         if (dirtyFields['name']) {
             filteredFormData.append('name', rawFormData.get('name') as string);
@@ -114,11 +114,11 @@ export function TenantModals({ properties }: { properties: any[] }) {
             filteredFormData.append('due_date_day', rawFormData.get('due_date_day') as string);
             hasChanges = true;
         }
-        
+
         if (hasChanges) {
             await editTenant(filteredFormData);
         }
-        
+
         setLoading(false);
         setEditTenantModalOpen(false);
         setSelectedTenantId('');
@@ -138,12 +138,12 @@ export function TenantModals({ properties }: { properties: any[] }) {
 
     const selectedProperty = properties.find((p) => p.id === selectedPropertyId);
     const selectedTenant = allTenants.find((t) => t.id === selectedTenantId);
-    
+
     // Get existing customer numbers for the selected property
     const getCustomerNumber = (billType: string) => {
         if (!selectedProperty?.property_customer_numbers) return '';
-        const numbers = Array.isArray(selectedProperty.property_customer_numbers) 
-            ? selectedProperty.property_customer_numbers 
+        const numbers = Array.isArray(selectedProperty.property_customer_numbers)
+            ? selectedProperty.property_customer_numbers
             : [selectedProperty.property_customer_numbers];
         const record = numbers.find((n: any) => n.bill_type === billType);
         return record ? record.customer_number : '';
@@ -151,28 +151,31 @@ export function TenantModals({ properties }: { properties: any[] }) {
 
     return (
         <>
-            <div className="flex gap-4 mb-6">
+            <div className="flex items-center gap-3 mb-6">
                 <button
                     onClick={() => setPropertyModalOpen(true)}
-                    className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors"
+                    className="bg-slate-800 text-white border border-slate-800 px-4 py-2 rounded-md hover:bg-slate-700 transition-colors shadow-sm font-medium"
                 >
                     Add Property
                 </button>
+                <button
+                    onClick={() => setTenantModalOpen(true)}
+                    className="bg-slate-800 text-white border border-slate-800 px-4 py-2 rounded-md hover:bg-slate-700 transition-colors shadow-sm font-medium"
+                >
+                    Add Tenant
+                </button>
+
+                <div className="w-px h-6 bg-slate-600 mx-2" />
+
                 <button
                     onClick={() => {
                         setSelectedPropertyId('');
                         setEditPropertyModalOpen(true);
                         setDirtyFields({});
                     }}
-                    className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
                     Edit Property
-                </button>
-                <button
-                    onClick={() => setTenantModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                    Add Tenant
                 </button>
                 <button
                     onClick={() => {
@@ -180,7 +183,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         setEditTenantModalOpen(true);
                         setDirtyFields({});
                     }}
-                    className="bg-blue-600 text-white border border-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
                     Edit Tenant
                 </button>
@@ -375,11 +378,19 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         onChange={() => handleFieldChange('water_customer_number')}
                                         pattern="[0-9]+"
                                         title="Customer number must contain only digits"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="e.g. 0123456789 (Optional)"
                                     />
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditPropertyModalOpen(false);
+                                            setSelectedPropertyId('');
+                                        }}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    >
+                                        Close
+                                    </button>
                                     <button
                                         type="submit"
                                         disabled={loading}
@@ -390,19 +401,21 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 </div>
                             </form>
                         )}
-                        
-                        <div className="flex justify-end mt-6">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setEditPropertyModalOpen(false);
-                                    setSelectedPropertyId('');
-                                }}
-                                className="px-4 py-2 text-slate-600 hover:text-slate-800"
-                            >
-                                Close
-                            </button>
-                        </div>
+
+                        {!selectedProperty && (
+                            <div className="flex justify-end mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEditPropertyModalOpen(false);
+                                        setSelectedPropertyId('');
+                                    }}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -645,6 +658,16 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 </div>
                                 <div className="flex justify-end gap-3 mt-6">
                                     <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditTenantModalOpen(false);
+                                            setSelectedTenantId('');
+                                        }}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    >
+                                        Close
+                                    </button>
+                                    <button
                                         type="submit"
                                         disabled={loading}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
@@ -654,19 +677,21 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 </div>
                             </form>
                         )}
-                        
-                        <div className="flex justify-end mt-6">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setEditTenantModalOpen(false);
-                                    setSelectedTenantId('');
-                                }}
-                                className="px-4 py-2 text-slate-600 hover:text-slate-800"
-                            >
-                                Close
-                            </button>
-                        </div>
+
+                        {!selectedTenant && (
+                            <div className="flex justify-end mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEditTenantModalOpen(false);
+                                        setSelectedTenantId('');
+                                    }}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
