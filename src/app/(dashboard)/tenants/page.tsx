@@ -9,7 +9,7 @@ export default async function TenantsPage() {
 
     const { data: properties } = await supabase
         .from('properties')
-        .select('*, tenants(*)')
+        .select('*, tenants(*), property_customer_numbers(*)')
         .order('created_at', { ascending: false });
 
     return (
