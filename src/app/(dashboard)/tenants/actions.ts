@@ -13,8 +13,27 @@ export async function addProperty(formData: FormData) {
 
     const userId = claimsData.claims.sub;
 
-    const name = formData.get('name') as string;
-    const address = formData.get('address') as string;
+    const nameRaw = formData.get('name');
+    const addressRaw = formData.get('address');
+
+    if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
+        return { error: 'Property name is required and cannot be empty.' };
+    }
+    const name = nameRaw.trim();
+    if (name.length > 100) {
+        return { error: 'Property name cannot exceed 100 characters.' };
+    }
+
+    let address = null;
+    if (addressRaw !== null) {
+        if (typeof addressRaw !== 'string') {
+            return { error: 'Invalid address format.' };
+        }
+        address = addressRaw.trim();
+        if (address.length > 500) {
+            return { error: 'Address cannot exceed 500 characters.' };
+        }
+    }
 
     const { data: propertyData, error } = await supabase
         .from('properties')
@@ -31,48 +50,43 @@ export async function addProperty(formData: FormData) {
         return { error: error.message };
     }
 
-    const electricityCustomerNumber = formData.get('electricity_customer_number') as string;
-    const gasCustomerNumber = formData.get('gas_customer_number') as string;
-    const waterCustomerNumber = formData.get('water_customer_number') as string;
-
-    const customerNumbers = [];
+    const customerNumbers: {
+        landlord_id: string;
+        property_id: string;
+        bill_type: string;
+        customer_number: string;
+    }[] = [];
     const digitRegex = /^[0-9]+$/;
 
-    if (electricityCustomerNumber && electricityCustomerNumber.trim()) {
-        const val = electricityCustomerNumber.trim();
-        if (!digitRegex.test(val)) {
-            return { error: 'Electricity customer number must contain only digits.' };
+    const processCustomerNumberAdd = (valRaw: FormDataEntryValue | null, billType: string) => {
+        if (valRaw !== null && valRaw !== '') {
+            if (typeof valRaw !== 'string') {
+                throw new Error(`Invalid ${billType} customer number format.`);
+            }
+            const val = valRaw.trim();
+            if (val.length > 0) {
+                if (val.length > 30) {
+                    throw new Error(`${billType} customer number cannot exceed 30 digits.`);
+                }
+                if (!digitRegex.test(val)) {
+                    throw new Error(`${billType} customer number must contain only digits.`);
+                }
+                customerNumbers.push({
+                    landlord_id: userId,
+                    property_id: propertyData.id,
+                    bill_type: billType,
+                    customer_number: val,
+                });
+            }
         }
-        customerNumbers.push({
-            landlord_id: userId,
-            property_id: propertyData.id,
-            bill_type: 'Electricity',
-            customer_number: val,
-        });
-    }
-    if (gasCustomerNumber && gasCustomerNumber.trim()) {
-        const val = gasCustomerNumber.trim();
-        if (!digitRegex.test(val)) {
-            return { error: 'Gas customer number must contain only digits.' };
-        }
-        customerNumbers.push({
-            landlord_id: userId,
-            property_id: propertyData.id,
-            bill_type: 'Gas',
-            customer_number: val,
-        });
-    }
-    if (waterCustomerNumber && waterCustomerNumber.trim()) {
-        const val = waterCustomerNumber.trim();
-        if (!digitRegex.test(val)) {
-            return { error: 'Water customer number must contain only digits.' };
-        }
-        customerNumbers.push({
-            landlord_id: userId,
-            property_id: propertyData.id,
-            bill_type: 'Water',
-            customer_number: val,
-        });
+    };
+
+    try {
+        processCustomerNumberAdd(formData.get('electricity_customer_number'), 'Electricity');
+        processCustomerNumberAdd(formData.get('gas_customer_number'), 'Gas');
+        processCustomerNumberAdd(formData.get('water_customer_number'), 'Water');
+    } catch (err: any) {
+        return { error: err.message };
     }
 
     if (customerNumbers.length > 0) {
@@ -98,11 +112,45 @@ export async function addTenant(formData: FormData) {
 
     if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
 
-    const name = formData.get('name') as string;
-    const phone_number = formData.get('phone_number') as string;
-    const property_id = formData.get('property_id') as string;
-    const rent_amount = Number(formData.get('rent_amount'));
-    const due_date_day = Number(formData.get('due_date_day'));
+    const nameRaw = formData.get('name');
+    if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
+        return { error: 'Tenant name is required and cannot be empty.' };
+    }
+    const name = nameRaw.trim();
+    if (name.length > 100) {
+        return { error: 'Tenant name cannot exceed 100 characters.' };
+    }
+
+    const phoneRaw = formData.get('phone_number');
+    if (typeof phoneRaw !== 'string' || phoneRaw.trim().length === 0) {
+        return { error: 'Phone number is required.' };
+    }
+    const phone_number = phoneRaw.trim();
+    if (phone_number.length > 20) {
+        return { error: 'Phone number cannot exceed 20 characters.' };
+    }
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
+    if (!phoneRegex.test(phone_number)) {
+        return { error: 'Invalid phone number format.' };
+    }
+
+    const propertyIdRaw = formData.get('property_id');
+    if (typeof propertyIdRaw !== 'string' || propertyIdRaw.trim().length === 0) {
+        return { error: 'Property assignment is required.' };
+    }
+    const property_id = propertyIdRaw.trim();
+
+    const rentAmountRaw = formData.get('rent_amount');
+    const rent_amount = Number(rentAmountRaw);
+    if (isNaN(rent_amount) || rent_amount < 0) {
+        return { error: 'Rent amount must be a valid positive number.' };
+    }
+
+    const dueDayRaw = formData.get('due_date_day');
+    const due_date_day = Number(dueDayRaw);
+    if (isNaN(due_date_day) || due_date_day < 1 || due_date_day > 31) {
+        return { error: 'Due day must be a number between 1 and 31.' };
+    }
 
     const { error } = await supabase.from('tenants').insert({
         name,
@@ -132,10 +180,26 @@ export async function editProperty(formData: FormData) {
     
     const updateData: Record<string, any> = {};
     if (formData.has('name')) {
-        updateData.name = formData.get('name') as string;
+        const nameRaw = formData.get('name');
+        if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
+            return { error: 'Property name is required and cannot be empty.' };
+        }
+        const name = nameRaw.trim();
+        if (name.length > 100) {
+            return { error: 'Property name cannot exceed 100 characters.' };
+        }
+        updateData.name = name;
     }
     if (formData.has('address')) {
-        updateData.address = formData.get('address') as string;
+        const addressRaw = formData.get('address');
+        if (typeof addressRaw !== 'string') {
+            return { error: 'Invalid address format.' };
+        }
+        const address = addressRaw.trim();
+        if (address.length > 500) {
+            return { error: 'Address cannot exceed 500 characters.' };
+        }
+        updateData.address = address;
     }
 
     if (Object.keys(updateData).length > 0) {
@@ -156,24 +220,33 @@ export async function editProperty(formData: FormData) {
     // Helper to process each bill type
     async function processCustomerNumber(billType: string, formKey: string) {
         if (formData.has(formKey)) {
-            const value = formData.get(formKey) as string;
-            if (value && value.trim()) {
-                const val = value.trim();
-                if (!digitRegex.test(val)) {
-                    throw new Error(`${billType} customer number must contain only digits.`);
+            const valRaw = formData.get(formKey);
+            if (valRaw !== null && valRaw !== '') {
+                if (typeof valRaw !== 'string') {
+                    throw new Error(`Invalid ${billType} customer number format.`);
                 }
-                await supabase.from('property_customer_numbers').upsert({
-                    landlord_id: userId,
-                    property_id: id,
-                    bill_type: billType,
-                    customer_number: val,
-                }, { onConflict: 'property_id, bill_type' });
-            } else {
-                await supabase.from('property_customer_numbers')
-                    .delete()
-                    .eq('property_id', id)
-                    .eq('bill_type', billType);
+                const val = valRaw.trim();
+                if (val.length > 0) {
+                    if (val.length > 30) {
+                        throw new Error(`${billType} customer number cannot exceed 30 digits.`);
+                    }
+                    if (!digitRegex.test(val)) {
+                        throw new Error(`${billType} customer number must contain only digits.`);
+                    }
+                    await supabase.from('property_customer_numbers').upsert({
+                        landlord_id: userId,
+                        property_id: id,
+                        bill_type: billType,
+                        customer_number: val,
+                    }, { onConflict: 'property_id, bill_type' });
+                    return;
+                }
             }
+            // If empty or null but field is present, we delete the record
+            await supabase.from('property_customer_numbers')
+                .delete()
+                .eq('property_id', id)
+                .eq('bill_type', billType);
         }
     }
 
@@ -199,19 +272,51 @@ export async function editTenant(formData: FormData) {
     
     const updateData: Record<string, any> = {};
     if (formData.has('name')) {
-        updateData.name = formData.get('name') as string;
+        const nameRaw = formData.get('name');
+        if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
+            return { error: 'Tenant name is required and cannot be empty.' };
+        }
+        const name = nameRaw.trim();
+        if (name.length > 100) {
+            return { error: 'Tenant name cannot exceed 100 characters.' };
+        }
+        updateData.name = name;
     }
     if (formData.has('phone_number')) {
-        updateData.phone_number = formData.get('phone_number') as string;
+        const phoneRaw = formData.get('phone_number');
+        if (typeof phoneRaw !== 'string' || phoneRaw.trim().length === 0) {
+            return { error: 'Phone number is required.' };
+        }
+        const phone_number = phoneRaw.trim();
+        if (phone_number.length > 20) {
+            return { error: 'Phone number cannot exceed 20 characters.' };
+        }
+        const phoneRegex = /^\+?[0-9]{7,15}$/;
+        if (!phoneRegex.test(phone_number)) {
+            return { error: 'Invalid phone number format.' };
+        }
+        updateData.phone_number = phone_number;
     }
     if (formData.has('property_id')) {
-        updateData.property_id = formData.get('property_id') as string;
+        const propertyIdRaw = formData.get('property_id');
+        if (typeof propertyIdRaw !== 'string' || propertyIdRaw.trim().length === 0) {
+            return { error: 'Property assignment is required.' };
+        }
+        updateData.property_id = propertyIdRaw.trim();
     }
     if (formData.has('rent_amount')) {
-        updateData.rent_amount = Number(formData.get('rent_amount'));
+        const rent_amount = Number(formData.get('rent_amount'));
+        if (isNaN(rent_amount) || rent_amount < 0) {
+            return { error: 'Rent amount must be a valid positive number.' };
+        }
+        updateData.rent_amount = rent_amount;
     }
     if (formData.has('due_date_day')) {
-        updateData.due_date_day = Number(formData.get('due_date_day'));
+        const due_date_day = Number(formData.get('due_date_day'));
+        if (isNaN(due_date_day) || due_date_day < 1 || due_date_day > 31) {
+            return { error: 'Due day must be a number between 1 and 31.' };
+        }
+        updateData.due_date_day = due_date_day;
     }
 
     if (Object.keys(updateData).length > 0) {

@@ -201,6 +201,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 <input
                                     required
                                     name="name"
+                                    maxLength={100}
+                                    pattern=".*\S.*"
+                                    title="Property name cannot be empty or only spaces"
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                     placeholder="e.g. Apartment 4B"
                                 />
@@ -211,6 +214,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 </label>
                                 <input
                                     name="address"
+                                    maxLength={500}
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                     placeholder="Full address"
                                 />
@@ -313,6 +317,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         name="name"
                                         defaultValue={selectedProperty.name}
                                         onChange={() => handleFieldChange('name')}
+                                        maxLength={100}
+                                        pattern=".*\S.*"
+                                        title="Property name cannot be empty or only spaces"
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="e.g. Apartment 4B"
                                     />
@@ -325,6 +332,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         name="address"
                                         defaultValue={selectedProperty.address || ''}
                                         onChange={() => handleFieldChange('address')}
+                                        maxLength={500}
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="Full address"
                                     />
@@ -417,6 +425,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     <input
                                         required
                                         name="name"
+                                        maxLength={100}
+                                        pattern=".*\S.*"
+                                        title="Tenant name cannot be empty or only spaces"
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="John Doe"
                                     />
@@ -428,6 +439,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     <input
                                         required
                                         name="phone_number"
+                                        maxLength={20}
+                                        pattern="^\+?[0-9]{7,15}$"
+                                        title="Valid phone number (7-15 digits, optional + prefix)"
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="+923001234567"
                                     />
@@ -550,6 +564,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         name="name"
                                         defaultValue={selectedTenant.name}
                                         onChange={() => handleFieldChange('name')}
+                                        maxLength={100}
+                                        pattern=".*\S.*"
+                                        title="Tenant name cannot be empty or only spaces"
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="John Doe"
                                     />
@@ -563,6 +580,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         name="phone_number"
                                         defaultValue={selectedTenant.phone_number}
                                         onChange={() => handleFieldChange('phone_number')}
+                                        maxLength={20}
+                                        pattern="^\+?[0-9]{7,15}$"
+                                        title="Valid phone number (7-15 digits, optional + prefix)"
                                         className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                         placeholder="+923001234567"
                                     />
