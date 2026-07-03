@@ -262,7 +262,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 <button
                                     type="button"
                                     onClick={() => setPropertyModalOpen(false)}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    disabled={loading}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
                                     Cancel
                                 </button>
@@ -387,7 +388,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                             setEditPropertyModalOpen(false);
                                             setSelectedPropertyId('');
                                         }}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                        disabled={loading}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                     >
                                         Close
                                     </button>
@@ -410,7 +412,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         setEditPropertyModalOpen(false);
                                         setSelectedPropertyId('');
                                     }}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    disabled={loading}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
                                     Close
                                 </button>
@@ -507,7 +510,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     <button
                                         type="button"
                                         onClick={() => setTenantModalOpen(false)}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                        disabled={loading}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                     >
                                         Cancel
                                     </button>
@@ -526,7 +530,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 <button
                                     type="button"
                                     onClick={() => setTenantModalOpen(false)}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    disabled={loading}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
                                     Close
                                 </button>
@@ -663,7 +668,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                             setEditTenantModalOpen(false);
                                             setSelectedTenantId('');
                                         }}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                        disabled={loading}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                     >
                                         Close
                                     </button>
@@ -686,7 +692,8 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         setEditTenantModalOpen(false);
                                         setSelectedTenantId('');
                                     }}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                                    disabled={loading}
+                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
                                     Close
                                 </button>
