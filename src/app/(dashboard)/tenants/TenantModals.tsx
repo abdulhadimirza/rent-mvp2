@@ -265,7 +265,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     disabled={loading}
                                     className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
-                                    Cancel
+                                    Close
                                 </button>
                                 <button
                                     type="submit"
@@ -533,7 +533,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         disabled={loading}
                                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                     >
-                                        Cancel
+                                        Close
                                     </button>
                                     <button
                                         type="submit"
