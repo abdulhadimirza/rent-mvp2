@@ -35,24 +35,7 @@ export async function addProperty(formData: FormData) {
         }
     }
 
-    const { data: propertyData, error } = await supabase
-        .from('properties')
-        .insert({
-            name,
-            address,
-            landlord_id: userId,
-        })
-        .select('id')
-        .single();
-
-    if (error) {
-        console.error('Error adding property:', error);
-        return { error: error.message };
-    }
-
     const customerNumbers: {
-        landlord_id: string;
-        property_id: string;
         bill_type: string;
         customer_number: string;
     }[] = [];
@@ -72,8 +55,6 @@ export async function addProperty(formData: FormData) {
                     throw new Error(`${billType} customer number must contain only digits.`);
                 }
                 customerNumbers.push({
-                    landlord_id: userId,
-                    property_id: propertyData.id,
                     bill_type: billType,
                     customer_number: val,
                 });
@@ -89,15 +70,16 @@ export async function addProperty(formData: FormData) {
         return { error: err.message };
     }
 
-    if (customerNumbers.length > 0) {
-        const { error: customerNumbersError } = await supabase
-            .from('property_customer_numbers')
-            .insert(customerNumbers);
+    const { error } = await supabase.rpc('add_property', {
+        p_name: name,
+        p_address: address,
+        p_landlord_id: userId,
+        p_customer_numbers: customerNumbers,
+    });
 
-        if (customerNumbersError) {
-            console.error('Error adding customer numbers:', customerNumbersError);
-            return { error: customerNumbersError.message };
-        }
+    if (error) {
+        console.error('Error adding property:', error);
+        return { error: error.message };
     }
 
     revalidatePath('/tenants');
@@ -202,23 +184,12 @@ export async function editProperty(formData: FormData) {
         updateData.address = address;
     }
 
-    if (Object.keys(updateData).length > 0) {
-        const { error } = await supabase
-            .from('properties')
-            .update(updateData)
-            .eq('id', id)
-            .eq('landlord_id', userId);
-
-        if (error) {
-            console.error('Error editing property:', error);
-            return { error: error.message };
-        }
-    }
-
+    const billsToUpsert: { bill_type: string; customer_number: string }[] = [];
+    const billsToDelete: string[] = [];
     const digitRegex = /^[0-9]+$/;
 
     // Helper to process each bill type
-    async function processCustomerNumber(billType: string, formKey: string) {
+    function processCustomerNumber(billType: string, formKey: string) {
         if (formData.has(formKey)) {
             const valRaw = formData.get(formKey);
             if (valRaw !== null && valRaw !== '') {
@@ -233,29 +204,37 @@ export async function editProperty(formData: FormData) {
                     if (!digitRegex.test(val)) {
                         throw new Error(`${billType} customer number must contain only digits.`);
                     }
-                    await supabase.from('property_customer_numbers').upsert({
-                        landlord_id: userId,
-                        property_id: id,
+                    billsToUpsert.push({
                         bill_type: billType,
                         customer_number: val,
-                    }, { onConflict: 'property_id, bill_type' });
+                    });
                     return;
                 }
             }
             // If empty or null but field is present, we delete the record
-            await supabase.from('property_customer_numbers')
-                .delete()
-                .eq('property_id', id)
-                .eq('bill_type', billType);
+            billsToDelete.push(billType);
         }
     }
 
     try {
-        await processCustomerNumber('Electricity', 'electricity_customer_number');
-        await processCustomerNumber('Gas', 'gas_customer_number');
-        await processCustomerNumber('Water', 'water_customer_number');
+        processCustomerNumber('Electricity', 'electricity_customer_number');
+        processCustomerNumber('Gas', 'gas_customer_number');
+        processCustomerNumber('Water', 'water_customer_number');
     } catch (err: any) {
         return { error: err.message };
+    }
+
+    const { error } = await supabase.rpc('edit_property', {
+        p_property_id: id,
+        p_landlord_id: userId,
+        p_update_data: updateData,
+        p_bills_to_upsert: billsToUpsert,
+        p_bills_to_delete: billsToDelete,
+    });
+
+    if (error) {
+        console.error('Error editing property:', error);
+        return { error: error.message };
     }
 
     revalidatePath('/tenants');
