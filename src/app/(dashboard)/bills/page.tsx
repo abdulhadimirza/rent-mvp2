@@ -9,14 +9,8 @@ export default async function BillsPage(props: {
 
     let query = supabase
         .from('bills')
-        .select(
-            `
-      *,
-      payments(amount_paid),
-      tenants(name, phone_number, properties(name))
-    `,
-        )
-        .order('due_date', { ascending: false });
+        .select(`*, payments(amount_paid), tenants(name, phone_number, properties(name))`,)
+        .order('due_date', { ascending: true });
 
     if (searchParams.status && searchParams.status !== 'all') {
         query = query.eq('status', searchParams.status);

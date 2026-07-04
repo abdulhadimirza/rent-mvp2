@@ -13,13 +13,23 @@ export function PaymentModal({
     onClose: () => void;
 }) {
     const [loading, setLoading] = useState(false);
+    const [amountPaidStr, setAmountPaidStr] = useState('0');
     const paid = bill.payments.reduce(
         (acc: number, p: any) => acc + Number(p.amount_paid),
         0,
     );
     const balance = Number(bill.amount_due) - paid;
 
-    async function handleSave(e: React.FormEvent<HTMLFormElement>) {
+    const amountPaid = Number(amountPaidStr) || 0;
+    const totalPaidAfterThisPayment = paid + amountPaid;
+    let calculatedStatus = 'unpaid';
+    if (totalPaidAfterThisPayment >= Number(bill.amount_due)) {
+        calculatedStatus = 'paid';
+    } else if (totalPaidAfterThisPayment > 0) {
+        calculatedStatus = 'partial';
+    }
+
+    async function handleSave(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
         const formData = new FormData(e.currentTarget);
@@ -60,18 +70,12 @@ export function PaymentModal({
                 <form onSubmit={handleSave} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Status
+                            Bill Status (Automatic)
                         </label>
-                        <select
-                            required
-                            name="status"
-                            defaultValue={bill.status}
-                            className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                        >
-                            <option value="unpaid">Unpaid</option>
-                            <option value="partial">Partial</option>
-                            <option value="paid">Paid</option>
-                        </select>
+                        <div className="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-slate-900 font-semibold capitalize">
+                            {calculatedStatus}
+                        </div>
+                        <input type="hidden" name="status" value={calculatedStatus} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -81,10 +85,21 @@ export function PaymentModal({
                             required
                             name="amount_paid"
                             type="number"
-                            step="0.01"
+                            step="1"
+                            min="1"
                             max={balance}
-                            defaultValue={Math.round(balance)}
-
+                            value={amountPaidStr}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                const num = Number(val) || 0;
+                                if (num > balance) {
+                                    setAmountPaidStr(balance.toString());
+                                } else if (num < 0) {
+                                    setAmountPaidStr('1');
+                                } else {
+                                    setAmountPaidStr(val);
+                                }
+                            }}
                             className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                         />
                         <p className="text-xs text-slate-500 mt-1">
