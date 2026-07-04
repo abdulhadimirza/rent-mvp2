@@ -313,3 +313,25 @@ export async function editTenant(formData: FormData) {
     revalidatePath('/tenants');
     return { success: true };
 }
+
+export async function deleteProperty(id: string) {
+    const supabase = await createClient();
+    const { error } = await supabase.from('properties').delete().eq('id', id);
+    if (error) {
+        console.error('Error deleting property:', error);
+        return { error: error.message };
+    }
+    revalidatePath('/tenants');
+    return { success: true };
+}
+
+export async function deleteTenant(id: string) {
+    const supabase = await createClient();
+    const { error } = await supabase.from('tenants').delete().eq('id', id);
+    if (error) {
+        console.error('Error deleting tenant:', error);
+        return { error: error.message };
+    }
+    revalidatePath('/tenants');
+    return { success: true };
+}

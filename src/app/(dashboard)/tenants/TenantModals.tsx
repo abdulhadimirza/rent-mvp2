@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { addProperty, addTenant, editProperty, editTenant } from './actions';
+import { addProperty, addTenant, editProperty, editTenant, deleteProperty, deleteTenant } from './actions';
 
 export function TenantModals({ properties }: { properties: any[] }) {
     const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
@@ -383,25 +383,43 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         placeholder="e.g. 0123456789 (Optional)"
                                     />
                                 </div>
-                                <div className="flex justify-end gap-3 mt-6">
+                                <div className="flex justify-between items-center mt-6">
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setEditPropertyModalOpen(false);
-                                            setSelectedPropertyId('');
+                                        disabled={loading}
+                                        onClick={async () => {
+                                            if (window.confirm('Are you sure you want to delete this property? This will also delete all associated tenants and bills.')) {
+                                                setLoading(true);
+                                                await deleteProperty(selectedProperty.id);
+                                                setLoading(false);
+                                                setEditPropertyModalOpen(false);
+                                                setSelectedPropertyId('');
+                                            }
                                         }}
-                                        disabled={loading}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                        className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                                     >
-                                        Close
+                                        Delete Property
                                     </button>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                    >
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </button>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEditPropertyModalOpen(false);
+                                                setSelectedPropertyId('');
+                                            }}
+                                            disabled={loading}
+                                            className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                        >
+                                            {loading ? 'Saving...' : 'Save Changes'}
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         )}
@@ -663,25 +681,43 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                         placeholder="5"
                                     />
                                 </div>
-                                <div className="flex justify-end gap-3 mt-6">
+                                <div className="flex justify-between items-center mt-6">
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setEditTenantModalOpen(false);
-                                            setSelectedTenantId('');
+                                        disabled={loading}
+                                        onClick={async () => {
+                                            if (window.confirm('Are you sure you want to delete this tenant?')) {
+                                                setLoading(true);
+                                                await deleteTenant(selectedTenant.id);
+                                                setLoading(false);
+                                                setEditTenantModalOpen(false);
+                                                setSelectedTenantId('');
+                                            }
                                         }}
-                                        disabled={loading}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                        className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                                     >
-                                        Close
+                                        Delete Tenant
                                     </button>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                    >
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </button>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEditTenantModalOpen(false);
+                                                setSelectedTenantId('');
+                                            }}
+                                            disabled={loading}
+                                            className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                        >
+                                            {loading ? 'Saving...' : 'Save Changes'}
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         )}
