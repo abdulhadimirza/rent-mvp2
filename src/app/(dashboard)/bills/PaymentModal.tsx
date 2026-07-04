@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { processPayment } from './actions';
 import { formatRupees } from '@/lib/utils';
 
-
 export function PaymentModal({
     bill,
     onClose,
