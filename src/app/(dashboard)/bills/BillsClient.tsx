@@ -103,7 +103,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                         (acc: number, p: any) => acc + Number(p.amount_paid),
                                         0,
                                     );
-                                    const remaining = Number(bill.amount_due) - paid;
+                                    const remaining = Math.max(0, Number(bill.amount_due) - paid);
 
                                     return (
                                         <tr

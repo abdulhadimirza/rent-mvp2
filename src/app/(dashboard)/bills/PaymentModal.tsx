@@ -17,7 +17,9 @@ export function PaymentModal({
         (acc: number, p: any) => acc + Number(p.amount_paid),
         0,
     );
-    const balance = Number(bill.amount_due) - paid;
+    const balance = Math.max(0, Number(bill.amount_due) - paid);
+    const isPaid = balance <= 0;
+    const isOverpaid = paid > Number(bill.amount_due);
 
     const amountPaid = Number(amountPaidStr) || 0;
     const totalPaidAfterThisPayment = paid + amountPaid;
@@ -61,7 +63,7 @@ export function PaymentModal({
                         <strong>Total Due:</strong> {formatRupees(bill.amount_due)}
                     </p>
                     <p>
-                        <strong>Remaining:</strong> {formatRupees(balance)}
+                        <strong>Remaining:</strong> {isOverpaid ? `Overpaid by ${formatRupees(paid - Number(bill.amount_due))}` : formatRupees(balance)}
                     </p>
 
                 </div>
@@ -80,13 +82,14 @@ export function PaymentModal({
                             Amount Paid
                         </label>
                         <input
-                            required
+                            required={!isPaid}
+                            disabled={isPaid}
                             name="amount_paid"
                             type="number"
                             step="1"
-                            min="1"
+                            min={isPaid ? 0 : 1}
                             max={balance}
-                            value={amountPaidStr}
+                            value={isPaid ? '0' : amountPaidStr}
                             onChange={(e) => {
                                 const val = e.target.value;
                                 const num = Number(val) || 0;
@@ -98,11 +101,20 @@ export function PaymentModal({
                                     setAmountPaidStr(val);
                                 }
                             }}
-                            className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                            className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900 disabled:bg-slate-100 disabled:opacity-50"
                         />
-                        <p className="text-xs text-slate-500 mt-1">
-                            This will be added to the total collected payments for this bill.
-                        </p>
+                        {isPaid ? (
+                            <p className="text-xs text-emerald-600 font-semibold mt-1">
+                                {isOverpaid 
+                                    ? `This bill is already overpaid by ${formatRupees(paid - Number(bill.amount_due))}.`
+                                    : 'This bill is already fully paid.'
+                                }
+                            </p>
+                        ) : (
+                            <p className="text-xs text-slate-500 mt-1">
+                                This will be added to the total collected payments for this bill.
+                            </p>
+                        )}
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
                         <button
@@ -115,7 +127,7 @@ export function PaymentModal({
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || isPaid}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : 'Record Payment'}
