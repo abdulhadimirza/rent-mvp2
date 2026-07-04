@@ -27,7 +27,7 @@ export async function processBillFile(blobUrl: string) {
             if (isValid) {
                 await del(blobUrl, { token: process.env.BLOB_READ_WRITE_TOKEN });
             }
-            return { success: false, error: 'Unauthorized' };
+            return { success: false, error: 'Not authenticated' };
         }
 
         // Security Validation
@@ -47,15 +47,13 @@ export async function processBillFile(blobUrl: string) {
         // Instantly return to the client
         return { success: true, message: 'Processing started in background.' };
     } catch (error: unknown) {
+        console.error('Error processing bill file:', error);
         try {
             await del(blobUrl, { token: process.env.BLOB_READ_WRITE_TOKEN });
         } catch (cleanupError) {
             console.error('Failed to delete blob during processBillFile failure cleanup:', cleanupError);
         }
 
-        const errorMessage =
-            error instanceof Error ? error.message : 'An unknown error occurred';
-
-        return { success: false, error: errorMessage };
+        return { success: false, error: 'Failed to process bill file. Please try again later.' };
     }
 }

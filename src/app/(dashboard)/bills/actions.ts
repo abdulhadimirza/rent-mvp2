@@ -34,7 +34,7 @@ export async function processPayment(formData: FormData) {
 
     if (error) {
         console.error('Error calling process_bill_payment:', error);
-        return { error: error.message };
+        return { error: 'Failed to process payment. Please try again later.' };
     }
 
     // The RPC returns a JSON object like { error: '...' } or { success: true }

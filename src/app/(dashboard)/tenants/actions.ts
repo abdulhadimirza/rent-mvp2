@@ -41,18 +41,18 @@ export async function addProperty(formData: FormData) {
     }[] = [];
     const digitRegex = /^[0-9]+$/;
 
-    const processCustomerNumberAdd = (valRaw: FormDataEntryValue | null, billType: string) => {
+    const processCustomerNumberAdd = (valRaw: FormDataEntryValue | null, billType: string): string | null => {
         if (valRaw !== null && valRaw !== '') {
             if (typeof valRaw !== 'string') {
-                throw new Error(`Invalid ${billType} customer number format.`);
+                return `Invalid ${billType} customer number format.`;
             }
             const val = valRaw.trim();
             if (val.length > 0) {
                 if (val.length > 30) {
-                    throw new Error(`${billType} customer number cannot exceed 30 digits.`);
+                    return `${billType} customer number cannot exceed 30 digits.`;
                 }
                 if (!digitRegex.test(val)) {
-                    throw new Error(`${billType} customer number must contain only digits.`);
+                    return `${billType} customer number must contain only digits.`;
                 }
                 customerNumbers.push({
                     bill_type: billType,
@@ -60,15 +60,15 @@ export async function addProperty(formData: FormData) {
                 });
             }
         }
+        return null;
     };
 
-    try {
-        processCustomerNumberAdd(formData.get('electricity_customer_number'), 'Electricity');
-        processCustomerNumberAdd(formData.get('gas_customer_number'), 'Gas');
-        processCustomerNumberAdd(formData.get('water_customer_number'), 'Water');
-    } catch (err: any) {
-        return { error: err.message };
-    }
+    const electricityErr = processCustomerNumberAdd(formData.get('electricity_customer_number'), 'Electricity');
+    if (electricityErr) return { error: electricityErr };
+    const gasErr = processCustomerNumberAdd(formData.get('gas_customer_number'), 'Gas');
+    if (gasErr) return { error: gasErr };
+    const waterErr = processCustomerNumberAdd(formData.get('water_customer_number'), 'Water');
+    if (waterErr) return { error: waterErr };
 
     const { error } = await supabase.rpc('add_property', {
         p_name: name,
@@ -79,7 +79,7 @@ export async function addProperty(formData: FormData) {
 
     if (error) {
         console.error('Error adding property:', error);
-        return { error: error.message };
+        return { error: 'Failed to add property. Please try again later.' };
     }
 
     revalidatePath('/tenants');
@@ -144,7 +144,7 @@ export async function addTenant(formData: FormData) {
 
     if (error) {
         console.error('Error adding tenant:', error);
-        return { error: error.message };
+        return { error: 'Failed to add tenant. Please try again later.' };
     }
 
     revalidatePath('/tenants');
@@ -189,40 +189,40 @@ export async function editProperty(formData: FormData) {
     const digitRegex = /^[0-9]+$/;
 
     // Helper to process each bill type
-    function processCustomerNumber(billType: string, formKey: string) {
+    function processCustomerNumber(billType: string, formKey: string): string | null {
         if (formData.has(formKey)) {
             const valRaw = formData.get(formKey);
             if (valRaw !== null && valRaw !== '') {
                 if (typeof valRaw !== 'string') {
-                    throw new Error(`Invalid ${billType} customer number format.`);
+                    return `Invalid ${billType} customer number format.`;
                 }
                 const val = valRaw.trim();
                 if (val.length > 0) {
                     if (val.length > 30) {
-                        throw new Error(`${billType} customer number cannot exceed 30 digits.`);
+                        return `${billType} customer number cannot exceed 30 digits.`;
                     }
                     if (!digitRegex.test(val)) {
-                        throw new Error(`${billType} customer number must contain only digits.`);
+                        return `${billType} customer number must contain only digits.`;
                     }
                     billsToUpsert.push({
                         bill_type: billType,
                         customer_number: val,
                     });
-                    return;
+                    return null;
                 }
             }
             // If empty or null but field is present, we delete the record
             billsToDelete.push(billType);
         }
+        return null;
     }
 
-    try {
-        processCustomerNumber('Electricity', 'electricity_customer_number');
-        processCustomerNumber('Gas', 'gas_customer_number');
-        processCustomerNumber('Water', 'water_customer_number');
-    } catch (err: any) {
-        return { error: err.message };
-    }
+    const electricityErr = processCustomerNumber('Electricity', 'electricity_customer_number');
+    if (electricityErr) return { error: electricityErr };
+    const gasErr = processCustomerNumber('Gas', 'gas_customer_number');
+    if (gasErr) return { error: gasErr };
+    const waterErr = processCustomerNumber('Water', 'water_customer_number');
+    if (waterErr) return { error: waterErr };
 
     const { error } = await supabase.rpc('edit_property', {
         p_property_id: id,
@@ -234,7 +234,7 @@ export async function editProperty(formData: FormData) {
 
     if (error) {
         console.error('Error editing property:', error);
-        return { error: error.message };
+        return { error: 'Failed to update property. Please try again later.' };
     }
 
     revalidatePath('/tenants');
@@ -306,7 +306,7 @@ export async function editTenant(formData: FormData) {
 
         if (error) {
             console.error('Error editing tenant:', error);
-            return { error: error.message };
+            return { error: 'Failed to update tenant. Please try again later.' };
         }
     }
 
@@ -319,7 +319,7 @@ export async function deleteProperty(id: string) {
     const { error } = await supabase.from('properties').delete().eq('id', id);
     if (error) {
         console.error('Error deleting property:', error);
-        return { error: error.message };
+        return { error: 'Failed to delete property. Please try again later.' };
     }
     revalidatePath('/tenants');
     return { success: true };
@@ -330,7 +330,7 @@ export async function deleteTenant(id: string) {
     const { error } = await supabase.from('tenants').delete().eq('id', id);
     if (error) {
         console.error('Error deleting tenant:', error);
-        return { error: error.message };
+        return { error: 'Failed to delete tenant. Please try again later.' };
     }
     revalidatePath('/tenants');
     return { success: true };
