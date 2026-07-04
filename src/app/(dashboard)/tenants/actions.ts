@@ -177,7 +177,7 @@ export async function editProperty(formData: FormData) {
     const userId = claimsData.claims.sub;
 
     const id = formData.get('id') as string;
-    
+
     const updateData: Record<string, any> = {};
     if (formData.has('name')) {
         const nameRaw = formData.get('name');
@@ -216,7 +216,7 @@ export async function editProperty(formData: FormData) {
     }
 
     const digitRegex = /^[0-9]+$/;
-    
+
     // Helper to process each bill type
     async function processCustomerNumber(billType: string, formKey: string) {
         if (formData.has(formKey)) {
@@ -269,7 +269,7 @@ export async function editTenant(formData: FormData) {
     if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
 
     const id = formData.get('id') as string;
-    
+
     const updateData: Record<string, any> = {};
     if (formData.has('name')) {
         const nameRaw = formData.get('name');
