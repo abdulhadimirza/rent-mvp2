@@ -4,45 +4,29 @@ import { createClient } from '@/lib/server';
 import { revalidatePath } from 'next/cache';
 import { formatRupees } from '@/lib/utils';
 
-
 export async function processPayment(formData: FormData) {
     const supabase = await createClient();
+
+    const { data: claimsData, error: authError } =
+        await supabase.auth.getClaims();
+
+    if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
+
+    const userId = claimsData.claims.sub;
 
     const bill_id = formData.get('bill_id') as string;
     const amount_paid = Number(formData.get('amount_paid'));
     const status = formData.get('status') as string;
-    const screenshot = formData.get('screenshot') as File | null;
 
-    // 1. Insert Payment
-    let screenshot_url = null;
-    if (screenshot && screenshot.size > 0) {
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
-        const user = session?.user;
-        if (!user) return { error: 'Not authenticated' };
-
-        const fileExt = screenshot.name.split('.').pop();
-        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('payment-proofs')
-            .upload(fileName, screenshot);
-
-        if (!uploadError && uploadData) {
-            screenshot_url = uploadData.path;
-        }
-    }
-
+    // Insert Payment
     const { error: paymentError } = await supabase.from('payments').insert({
         bill_id,
         amount_paid,
-        screenshot_url,
     });
 
     if (paymentError) return { error: paymentError.message };
 
-    // 2. Update Bill Status
+    // Update Bill Status
     const { error: billError } = await supabase
         .from('bills')
         .update({ status })
@@ -51,7 +35,6 @@ export async function processPayment(formData: FormData) {
     if (billError) return { error: billError.message };
 
     revalidatePath('/bills');
-    revalidatePath('/dashboard');
     return { success: true };
 }
 
