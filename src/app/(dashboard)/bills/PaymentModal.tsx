@@ -75,7 +75,6 @@ export function PaymentModal({
                         <div className="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-slate-900 font-semibold capitalize">
                             {calculatedStatus}
                         </div>
-                        <input type="hidden" name="status" value={calculatedStatus} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -110,7 +109,8 @@ export function PaymentModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                            disabled={loading}
+                            className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                         >
                             Cancel
                         </button>
