@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { addProperty, addTenant, editProperty, editTenant, deleteProperty, deleteTenant } from './actions';
+import { GlobalRentPaymentModal } from './GlobalRentPaymentModal';
 
 export function TenantModals({ properties }: { properties: any[] }) {
     const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
@@ -12,6 +13,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
     // Edit Modal states
     const [isEditPropertyModalOpen, setEditPropertyModalOpen] = useState(false);
     const [isEditTenantModalOpen, setEditTenantModalOpen] = useState(false);
+    const [isGlobalRentModalOpen, setGlobalRentModalOpen] = useState(false);
 
     const [selectedPropertyId, setSelectedPropertyId] = useState('');
     const [selectedTenantId, setSelectedTenantId] = useState('');
@@ -155,19 +157,24 @@ export function TenantModals({ properties }: { properties: any[] }) {
         <>
             <div className="flex items-center gap-3 mb-6">
                 <button
+                    onClick={() => setGlobalRentModalOpen(true)}
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                >
+                    Record Rent Payment
+                </button>
+
+                <button
                     onClick={() => setPropertyModalOpen(true)}
-                    className="bg-slate-800 text-white border border-slate-800 px-4 py-2 rounded-md hover:bg-slate-700 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
                     Add Property
                 </button>
                 <button
                     onClick={() => setTenantModalOpen(true)}
-                    className="bg-slate-800 text-white border border-slate-800 px-4 py-2 rounded-md hover:bg-slate-700 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
                     Add Tenant
                 </button>
-
-                <div className="w-px h-6 bg-slate-600 mx-2" />
 
                 <button
                     onClick={() => {
@@ -741,6 +748,13 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         )}
                     </div>
                 </div>
+            )}
+            {/* GLOBAL RENT PAYMENT MODAL */}
+            {isGlobalRentModalOpen && (
+                <GlobalRentPaymentModal
+                    tenants={allTenants}
+                    onClose={() => setGlobalRentModalOpen(false)}
+                />
             )}
         </>
     );

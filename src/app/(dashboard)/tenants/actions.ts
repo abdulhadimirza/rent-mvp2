@@ -336,3 +336,22 @@ export async function deleteTenant(id: string) {
     revalidatePath('/tenants');
     return { success: true };
 }
+
+export async function getUnpaidRentCycles(tenantId: string) {
+    const supabase = await createClient();
+    const { data: claimsData, error: authError } = await supabase.auth.getClaims();
+    if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
+
+    const { data, error } = await supabase
+        .from('rent_cycles')
+        .select(`*, rent_payments(amount_paid), tenants(name, properties(name))`)
+        .eq('tenant_id', tenantId)
+        .neq('status', 'paid')
+        .order('due_date', { ascending: true });
+        
+    if (error) {
+        console.error('Error fetching unpaid rent cycles:', error);
+        return { error: 'Failed to fetch rent cycles' };
+    }
+    return { data };
+}

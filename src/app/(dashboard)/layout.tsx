@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, Users, Upload, LogOut, FileText } from 'lucide-react';
+import { Home, Users, Upload, LogOut, FileText, Wallet } from 'lucide-react';
 
 export default async function DashboardLayout({
     children,
@@ -35,6 +35,13 @@ export default async function DashboardLayout({
                     >
                         <Upload className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
                         Upload Bill
+                    </Link>
+                    <Link
+                        href="/rent"
+                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
+                    >
+                        <Wallet className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
+                        Rent Tracking
                     </Link>
                     <Link
                         href="/bills"
