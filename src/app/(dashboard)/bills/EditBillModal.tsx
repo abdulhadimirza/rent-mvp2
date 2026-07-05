@@ -62,8 +62,8 @@ export function EditBillModal({
         onClose();
     }
 
-    const formattedDate = bill.due_date 
-        ? new Date(bill.due_date).toISOString().split('T')[0] 
+    const formattedDate = bill.due_date
+        ? new Date(bill.due_date).toISOString().split('T')[0]
         : '';
 
     return (
@@ -72,7 +72,7 @@ export function EditBillModal({
                 <h3 className="text-lg font-semibold mb-4 text-slate-900">
                     Edit Bill
                 </h3>
-                
+
                 <form onSubmit={handleSave} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -109,7 +109,7 @@ export function EditBillModal({
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Amount Due (₹)
+                            Amount Due (Rs. )
                         </label>
                         <input
                             required
