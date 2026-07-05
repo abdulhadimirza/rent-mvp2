@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PaymentModal } from './PaymentModal';
+import { BillDetailsModal } from './BillDetailsModal';
 import { sendWhatsAppReminder } from './actions';
 import { MessageCircle } from 'lucide-react';
 import { formatRupees } from '@/lib/utils';
@@ -15,7 +16,8 @@ export function BillsClient({ bills }: { bills: any[] }) {
     const statusFilter = searchParams.get('status') || 'all';
     const monthFilter = searchParams.get('month') || 'all';
 
-    const [selectedBill, setSelectedBill] = useState<any>(null);
+    const [paymentBill, setPaymentBill] = useState<any>(null);
+    const [detailsBill, setDetailsBill] = useState<any>(null);
     const [sendingReminder, setSendingReminder] = useState<string | null>(null);
 
     const handleFilterChange = (key: string, value: string) => {
@@ -108,7 +110,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                     return (
                                         <tr
                                             key={bill.id}
-                                            onClick={() => setSelectedBill(bill)}
+                                            onClick={() => setDetailsBill(bill)}
                                             className="hover:bg-slate-50 cursor-pointer transition-colors"
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
@@ -153,10 +155,21 @@ export function BillsClient({ bills }: { bills: any[] }) {
                 </div>
             </div>
 
-            {selectedBill && (
+            {paymentBill && (
                 <PaymentModal
-                    bill={selectedBill}
-                    onClose={() => setSelectedBill(null)}
+                    bill={paymentBill}
+                    onClose={() => setPaymentBill(null)}
+                />
+            )}
+
+            {detailsBill && (
+                <BillDetailsModal
+                    bill={detailsBill}
+                    onClose={() => setDetailsBill(null)}
+                    onRecordPayment={() => {
+                        setPaymentBill(detailsBill);
+                        setDetailsBill(null);
+                    }}
                 />
             )}
         </div>

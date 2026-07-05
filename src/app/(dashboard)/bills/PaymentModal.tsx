@@ -105,7 +105,7 @@ export function PaymentModal({
                         />
                         {isPaid ? (
                             <p className="text-xs text-emerald-600 font-semibold mt-1">
-                                {isOverpaid 
+                                {isOverpaid
                                     ? `This bill is already overpaid by ${formatRupees(paid - Number(bill.amount_due))}.`
                                     : 'This bill is already fully paid.'
                                 }
@@ -130,7 +130,7 @@ export function PaymentModal({
                             disabled={loading || isPaid}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                         >
-                            {loading ? 'Saving...' : 'Record Payment'}
+                            {loading ? 'Saving...' : 'Save Payment'}
                         </button>
                     </div>
                 </form>
