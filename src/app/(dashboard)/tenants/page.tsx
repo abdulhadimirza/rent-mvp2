@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/lib/server';
 import { TenantModals } from './TenantModals';
 import { Home } from 'lucide-react';

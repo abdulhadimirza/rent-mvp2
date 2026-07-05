@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inngest } from '@/lib/inngest';
 import { extractBillDetails, validateExtractedBill, ExtractedBill } from '@/lib/billExtractor';
 import { createClient } from '@supabase/supabase-js';

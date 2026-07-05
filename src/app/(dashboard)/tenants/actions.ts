@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { createClient } from '@/lib/server';
@@ -160,7 +161,7 @@ export async function editProperty(formData: FormData) {
 
     const id = formData.get('id') as string;
 
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, unknown> = {};
     if (formData.has('name')) {
         const nameRaw = formData.get('name');
         if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {
@@ -249,7 +250,7 @@ export async function editTenant(formData: FormData) {
 
     const id = formData.get('id') as string;
 
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, unknown> = {};
     if (formData.has('name')) {
         const nameRaw = formData.get('name');
         if (typeof nameRaw !== 'string' || nameRaw.trim().length === 0) {

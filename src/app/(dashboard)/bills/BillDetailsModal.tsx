@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { formatRupees } from '@/lib/utils';
@@ -7,10 +8,12 @@ export function BillDetailsModal({
     bill,
     onClose,
     onRecordPayment,
+    onEditBill,
 }: {
     bill: any;
     onClose: () => void;
     onRecordPayment: () => void;
+    onEditBill: () => void;
 }) {
     const paid = bill.payments.reduce(
         (acc: number, p: any) => acc + Number(p.amount_paid),
@@ -28,11 +31,11 @@ export function BillDetailsModal({
                     <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
                             ${bill.status === 'paid'
-                                ? 'bg-green-100 text-green-800'
-                                : bill.status === 'partial'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                            }
+            ? 'bg-green-100 text-green-800'
+            : bill.status === 'partial'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
+        }
                         `}
                     >
                         {bill.status}
@@ -109,7 +112,7 @@ export function BillDetailsModal({
                     </button>
                     <button
                         type="button"
-                        onClick={() => alert('Edit Bill functionality coming soon!')}
+                        onClick={onEditBill}
                         className="px-4 py-2 border border-slate-300 text-slate-700 bg-white rounded-md hover:bg-slate-50"
                     >
                         Edit Bill

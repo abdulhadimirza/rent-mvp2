@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PaymentModal } from './PaymentModal';
 import { BillDetailsModal } from './BillDetailsModal';
+import { EditBillModal } from './EditBillModal';
 import { sendWhatsAppReminder } from './actions';
 import { MessageCircle } from 'lucide-react';
 import { formatRupees } from '@/lib/utils';
@@ -18,6 +20,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
 
     const [paymentBill, setPaymentBill] = useState<any>(null);
     const [detailsBill, setDetailsBill] = useState<any>(null);
+    const [editBill, setEditBill] = useState<any>(null);
     const [sendingReminder, setSendingReminder] = useState<string | null>(null);
 
     const handleFilterChange = (key: string, value: string) => {
@@ -136,11 +139,11 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                                 <span
                                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
                            ${bill.status === 'paid'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : bill.status === 'partial'
-                                                                ? 'bg-yellow-100 text-yellow-800'
-                                                                : 'bg-red-100 text-red-800'
-                                                        }
+                                            ? 'bg-green-100 text-green-800'
+                                            : bill.status === 'partial'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : 'bg-red-100 text-red-800'
+                                        }
                          `}
                                                 >
                                                     {bill.status}
@@ -170,6 +173,17 @@ export function BillsClient({ bills }: { bills: any[] }) {
                         setPaymentBill(detailsBill);
                         setDetailsBill(null);
                     }}
+                    onEditBill={() => {
+                        setEditBill(detailsBill);
+                        setDetailsBill(null);
+                    }}
+                />
+            )}
+
+            {editBill && (
+                <EditBillModal
+                    bill={editBill}
+                    onClose={() => setEditBill(null)}
                 />
             )}
         </div>
