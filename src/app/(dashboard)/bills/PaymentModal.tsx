@@ -18,8 +18,8 @@ export function PaymentModal({
         (acc: number, p: any) => acc + Number(p.amount_paid),
         0,
     );
-    const balance = Math.max(0, Number(bill.amount_due) - paid);
-    const isPaid = balance <= 0;
+    const remaining = Math.max(0, Number(bill.amount_due) - paid);
+    const isPaid = remaining <= 0;
     const isOverpaid = paid > Number(bill.amount_due);
 
     const amountPaid = Number(amountPaidStr) || 0;
@@ -64,7 +64,7 @@ export function PaymentModal({
                         <strong>Total Due:</strong> {formatRupees(bill.amount_due)}
                     </p>
                     <p>
-                        <strong>Remaining:</strong> {isOverpaid ? `Overpaid by ${formatRupees(paid - Number(bill.amount_due))}` : formatRupees(balance)}
+                        <strong>Remaining:</strong> {isOverpaid ? `Overpaid by ${formatRupees(paid - Number(bill.amount_due))}` : formatRupees(remaining)}
                     </p>
 
                 </div>
@@ -89,13 +89,13 @@ export function PaymentModal({
                             type="number"
                             step="1"
                             min={isPaid ? 0 : 1}
-                            max={balance}
+                            max={remaining}
                             value={isPaid ? '0' : amountPaidStr}
                             onChange={(e) => {
                                 const val = e.target.value;
                                 const num = Number(val) || 0;
-                                if (num > balance) {
-                                    setAmountPaidStr(balance.toString());
+                                if (num > remaining) {
+                                    setAmountPaidStr(remaining.toString());
                                 } else if (num < 0) {
                                     setAmountPaidStr('1');
                                 } else {

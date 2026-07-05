@@ -31,11 +31,11 @@ export function BillDetailsModal({
                     <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
                             ${bill.status === 'paid'
-            ? 'bg-green-100 text-green-800'
-            : bill.status === 'partial'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-red-100 text-red-800'
-        }
+                                ? 'bg-green-100 text-green-800'
+                                : bill.status === 'partial'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
+                            }
                         `}
                     >
                         {bill.status}
@@ -53,7 +53,7 @@ export function BillDetailsModal({
                             <p className="text-slate-900 font-semibold">{bill.tenants.properties.name}</p>
                         </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                         <div>
                             <p className="text-slate-500 font-medium">Bill Type</p>
@@ -71,7 +71,7 @@ export function BillDetailsModal({
                             <p className="text-slate-900">{formatRupees(bill.amount_due)}</p>
                         </div>
                         <div>
-                            <p className="text-slate-500 font-medium">Remaining Balance</p>
+                            <p className="text-slate-500 font-medium">Remaining</p>
                             <p className="text-slate-900 font-semibold">{formatRupees(remaining)}</p>
                         </div>
                     </div>
@@ -86,9 +86,9 @@ export function BillDetailsModal({
                         <div>
                             <p className="text-slate-500 font-medium">PDF File</p>
                             {bill.pdf_url ? (
-                                <a 
-                                    href={bill.pdf_url} 
-                                    target="_blank" 
+                                <a
+                                    href={bill.pdf_url}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
                                 >
