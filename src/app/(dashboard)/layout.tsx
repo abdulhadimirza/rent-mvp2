@@ -30,13 +30,6 @@ export default async function DashboardLayout({
                         Tenants
                     </Link>
                     <Link
-                        href="/upload"
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <Upload className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Upload Bill
-                    </Link>
-                    <Link
                         href="/rent"
                         className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
                     >
@@ -50,6 +43,13 @@ export default async function DashboardLayout({
                     >
                         <FileText className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
                         Bills
+                    </Link>
+                    <Link
+                        href="/upload"
+                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
+                    >
+                        <Upload className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
+                        Upload Bill
                     </Link>
                 </nav>
 
