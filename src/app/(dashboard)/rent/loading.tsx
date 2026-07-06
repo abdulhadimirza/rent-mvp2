@@ -1,8 +1,53 @@
 export default function Loading() {
     return (
         <div className="space-y-8 animate-pulse">
-            <div className="h-20 bg-slate-200 rounded-md w-1/3" />
-            <div className="h-64 bg-slate-200 rounded-lg w-full" />
+            {/* Title & Subtitle */}
+            <div>
+                <div className="h-9 bg-slate-200 rounded-md w-48" />
+                <div className="h-4 bg-slate-200 rounded-md w-96 mt-2" />
+            </div>
+
+            {/* Data Grid Table Skeleton */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th className="px-6 py-3 font-medium">Tenant</th>
+                                <th className="px-6 py-3 font-medium">Property</th>
+                                <th className="px-6 py-3 font-medium">Rent Period</th>
+                                <th className="px-6 py-3 font-medium">Amount Due</th>
+                                <th className="px-6 py-3 font-medium">Remaining</th>
+                                <th className="px-6 py-3 font-medium">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                            {[1, 2, 3, 4, 5].map((row) => (
+                                <tr key={row}>
+                                    <td className="px-6 py-4">
+                                        <div className="h-4 bg-slate-200 rounded w-28" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="h-4 bg-slate-200 rounded w-32" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="h-4 bg-slate-200 rounded w-20" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="h-4 bg-slate-200 rounded w-20" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="h-4 bg-slate-200 rounded w-20 font-semibold" />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="h-6 bg-slate-200 rounded-full w-16" />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 }
