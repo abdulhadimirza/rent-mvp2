@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
     ) {
         // user is already logged in, redirect to dashboard
         const url = request.nextUrl.clone();
-        url.pathname = '/upload';
+        url.pathname = '/dashboard';
         return NextResponse.redirect(url);
     }
 
