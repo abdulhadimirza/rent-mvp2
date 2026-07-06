@@ -348,10 +348,11 @@ export async function getUnpaidRentCycles(tenantId: string) {
         .eq('tenant_id', tenantId)
         .neq('status', 'paid')
         .order('due_date', { ascending: true });
-        
+
     if (error) {
         console.error('Error fetching unpaid rent cycles:', error);
         return { error: 'Failed to fetch rent cycles' };
     }
+
     return { data };
 }

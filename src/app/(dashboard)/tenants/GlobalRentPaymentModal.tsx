@@ -16,25 +16,30 @@ export function GlobalRentPaymentModal({
     const [rentCycles, setRentCycles] = useState<any[]>([]);
     const [selectedCycleId, setSelectedCycleId] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchCycles = async (tenantId: string) => {
+        setLoading(true);
+        setError(null);
+        const res = await getUnpaidRentCycles(tenantId);
+        if (res.error) {
+            setError(res.error);
+        } else if (res.data) {
+            setRentCycles(res.data);
+        }
+        setLoading(false);
+    };
 
     useEffect(() => {
         setRentCycles([]);
         setSelectedCycleId('');
+        setError(null);
 
         if (!selectedTenantId) {
             return;
         }
 
-        async function fetchCycles() {
-            setLoading(true);
-            const res = await getUnpaidRentCycles(selectedTenantId);
-            if (res.data) {
-                setRentCycles(res.data);
-            }
-            setLoading(false);
-        }
-
-        fetchCycles();
+        fetchCycles(selectedTenantId);
     }, [selectedTenantId]);
 
     const selectedCycle = rentCycles.find((c) => c.id === selectedCycleId);
@@ -75,6 +80,17 @@ export function GlobalRentPaymentModal({
                                 </label>
                                 {loading ? (
                                     <div className="text-sm text-slate-500">Loading rent cycles...</div>
+                                ) : error ? (
+                                    <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                                        <div className="text-sm text-red-600">{error}</div>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => fetchCycles(selectedTenantId)}
+                                            className="self-start px-3 py-1 bg-white border border-red-200 text-red-600 rounded hover:bg-red-50 text-sm font-medium transition-colors"
+                                        >
+                                            Retry
+                                        </button>
+                                    </div>
                                 ) : rentCycles.length === 0 ? (
                                     <div className="text-sm text-slate-500">No unpaid rent cycles found for this tenant.</div>
                                 ) : (
