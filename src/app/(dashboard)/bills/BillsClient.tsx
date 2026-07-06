@@ -18,9 +18,13 @@ export function BillsClient({ bills }: { bills: any[] }) {
     const statusFilter = searchParams.get('status') || 'all';
     const monthFilter = searchParams.get('month') || 'all';
 
-    const [paymentBill, setPaymentBill] = useState<any>(null);
-    const [detailsBill, setDetailsBill] = useState<any>(null);
-    const [editBill, setEditBill] = useState<any>(null);
+    const [paymentBillId, setPaymentBillId] = useState<string | null>(null);
+    const [detailsBillId, setDetailsBillId] = useState<string | null>(null);
+    const [editBillId, setEditBillId] = useState<string | null>(null);
+
+    const paymentBill = bills.find((b) => b.id === paymentBillId);
+    const detailsBill = bills.find((b) => b.id === detailsBillId);
+    const editBill = bills.find((b) => b.id === editBillId);
     const [sendingReminder, setSendingReminder] = useState<string | null>(null);
 
     const handleFilterChange = (key: string, value: string) => {
@@ -113,7 +117,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                     return (
                                         <tr
                                             key={bill.id}
-                                            onClick={() => setDetailsBill(bill)}
+                                            onClick={() => setDetailsBillId(bill.id)}
                                             className="hover:bg-slate-50 cursor-pointer transition-colors"
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
@@ -161,21 +165,21 @@ export function BillsClient({ bills }: { bills: any[] }) {
             {paymentBill && (
                 <PaymentModal
                     bill={paymentBill}
-                    onClose={() => setPaymentBill(null)}
+                    onClose={() => setPaymentBillId(null)}
                 />
             )}
 
             {detailsBill && (
                 <BillDetailsModal
                     bill={detailsBill}
-                    onClose={() => setDetailsBill(null)}
+                    onClose={() => setDetailsBillId(null)}
                     onRecordPayment={() => {
-                        setPaymentBill(detailsBill);
-                        setDetailsBill(null);
+                        setPaymentBillId(detailsBill.id);
+                        setDetailsBillId(null);
                     }}
                     onEditBill={() => {
-                        setEditBill(detailsBill);
-                        setDetailsBill(null);
+                        setEditBillId(detailsBill.id);
+                        setDetailsBillId(null);
                     }}
                 />
             )}
@@ -183,7 +187,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
             {editBill && (
                 <EditBillModal
                     bill={editBill}
-                    onClose={() => setEditBill(null)}
+                    onClose={() => setEditBillId(null)}
                 />
             )}
         </div>

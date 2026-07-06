@@ -13,9 +13,13 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const [paymentRent, setPaymentRent] = useState<any>(null);
-    const [detailsRent, setDetailsRent] = useState<any>(null);
-    const [editRent, setEditRent] = useState<any>(null);
+    const [paymentRentId, setPaymentRentId] = useState<string | null>(null);
+    const [detailsRentId, setDetailsRentId] = useState<string | null>(null);
+    const [editRentId, setEditRentId] = useState<string | null>(null);
+
+    const paymentRent = rentCycles.find((r) => r.id === paymentRentId);
+    const detailsRent = rentCycles.find((r) => r.id === detailsRentId);
+    const editRent = rentCycles.find((r) => r.id === editRentId);
 
     return (
         <div>
@@ -55,7 +59,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
                                     return (
                                         <tr
                                             key={rentCycle.id}
-                                            onClick={() => setDetailsRent(rentCycle)}
+                                            onClick={() => setDetailsRentId(rentCycle.id)}
                                             className="hover:bg-slate-50 cursor-pointer transition-colors"
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
@@ -99,21 +103,21 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
             {paymentRent && (
                 <RentPaymentModal
                     rentCycle={paymentRent}
-                    onClose={() => setPaymentRent(null)}
+                    onClose={() => setPaymentRentId(null)}
                 />
             )}
 
             {detailsRent && (
                 <RentDetailsModal
                     rentCycle={detailsRent}
-                    onClose={() => setDetailsRent(null)}
+                    onClose={() => setDetailsRentId(null)}
                     onRecordPayment={() => {
-                        setPaymentRent(detailsRent);
-                        setDetailsRent(null);
+                        setPaymentRentId(detailsRent.id);
+                        setDetailsRentId(null);
                     }}
                     onEditRent={() => {
-                        setEditRent(detailsRent);
-                        setDetailsRent(null);
+                        setEditRentId(detailsRent.id);
+                        setDetailsRentId(null);
                     }}
                 />
             )}
@@ -121,7 +125,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
             {editRent && (
                 <EditRentModal
                     rentCycle={editRent}
-                    onClose={() => setEditRent(null)}
+                    onClose={() => setEditRentId(null)}
                 />
             )}
         </div>

@@ -133,7 +133,7 @@ export function BillDetailsModal({
                                         </div>
                                         <button
                                             onClick={() => handleDeletePayment(payment.id)}
-                                            disabled={isDeleting === payment.id}
+                                            disabled={isDeleting !== null}
                                             className="text-red-500 hover:text-red-700 disabled:opacity-50 p-1.5 hover:bg-red-50 rounded-md transition-colors"
                                             title="Delete payment"
                                         >
