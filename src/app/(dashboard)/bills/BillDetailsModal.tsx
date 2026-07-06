@@ -115,7 +115,7 @@ export function BillDetailsModal({
                         onClick={onEditBill}
                         className="px-4 py-2 border border-slate-300 text-slate-700 bg-white rounded-md hover:bg-slate-50"
                     >
-                        Edit Bill
+                        Edit
                     </button>
                     <button
                         type="button"

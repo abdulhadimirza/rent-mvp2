@@ -27,7 +27,7 @@ export default async function DashboardLayout({
                         className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
                     >
                         <Users className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Tenants
+                        Tenants & Properties
                     </Link>
                     <Link
                         href="/rent"
@@ -42,7 +42,7 @@ export default async function DashboardLayout({
                         className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
                     >
                         <FileText className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Bills
+                        Utility Bills
                     </Link>
                     <Link
                         href="/upload"
