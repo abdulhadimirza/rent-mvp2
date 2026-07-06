@@ -25,11 +25,11 @@ export default async function DashboardPage() {
 
         supabase
             .from('bills')
-            .select('amount_due, id, payments(amount_paid)')
+            .select('amount_due, id, bill_payments(amount_paid)')
             .in('status', ['unpaid', 'partial']),
 
         supabase
-            .from('payments')
+            .from('bill_payments')
             .select('amount_paid')
             .gte('payment_date', startOfMonth.toISOString()),
 
@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         amount_due,
         due_date,
         status,
-        payments(amount_paid),
+        bill_payments(amount_paid),
         tenants(name, properties(name))
       `,
             )
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
 
     let totalOutstanding = 0;
     unpaidBills?.forEach((bill) => {
-        const paid = bill.payments.reduce(
+        const paid = bill.bill_payments.reduce(
             (acc: number, p: any) => acc + Number(p.amount_paid),
             0,
         );
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
     const whoOwesWhat =
         whoOwesWhatData
             ?.map((bill) => {
-                const paid = bill.payments.reduce(
+                const paid = bill.bill_payments.reduce(
                     (acc: number, p: any) => acc + Number(p.amount_paid),
                     0,
                 );

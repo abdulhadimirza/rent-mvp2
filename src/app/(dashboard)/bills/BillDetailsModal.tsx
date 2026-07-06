@@ -15,7 +15,7 @@ export function BillDetailsModal({
     onRecordPayment: () => void;
     onEditBill: () => void;
 }) {
-    const paid = bill.payments.reduce(
+    const paid = bill.bill_payments.reduce(
         (acc: number, p: any) => acc + Number(p.amount_paid),
         0,
     );

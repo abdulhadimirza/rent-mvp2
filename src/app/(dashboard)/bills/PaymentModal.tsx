@@ -14,7 +14,7 @@ export function PaymentModal({
 }) {
     const [loading, setLoading] = useState(false);
     const [amountPaidStr, setAmountPaidStr] = useState('0');
-    const paid = bill.payments.reduce(
+    const paid = bill.bill_payments.reduce(
         (acc: number, p: any) => acc + Number(p.amount_paid),
         0,
     );

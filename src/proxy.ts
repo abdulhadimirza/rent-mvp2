@@ -10,12 +10,12 @@ export const config = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:
-         * - api/inngest (Added to allow Inngest traffic to pass through)
+         * - api/inngest, x/inngest, .netlify/functions/inngest, .redwood/functions/inngest
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
          * - All assets ending in common extensions (svg, png, jpg, etc.)
          */
-        '/((?!api/inngest|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api/inngest|x/inngest|\\.netlify/functions/inngest|\\.redwood/functions/inngest|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };
