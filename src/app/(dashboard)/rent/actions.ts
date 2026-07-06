@@ -106,3 +106,27 @@ export async function editRentCycle(formData: FormData) {
     revalidatePath('/rent');
     return { success: true };
 }
+
+export async function deleteRentPayment(paymentId: string) {
+    const supabase = await createClient();
+
+    const { data: claimsData, error: authError } = await supabase.auth.getClaims();
+    if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
+
+    const { data, error } = await supabase.rpc('delete_rent_payment', {
+        p_payment_id: paymentId,
+    });
+
+    if (error) {
+        console.error('Error deleting rent payment:', error);
+        return { error: 'Failed to delete payment. Please try again later.' };
+    }
+
+    if (data && typeof data === 'object' && 'error' in (data as any)) {
+        return { error: (data as any).error };
+    }
+
+    revalidatePath('/rent');
+    revalidatePath('/tenants');
+    return { success: true };
+}

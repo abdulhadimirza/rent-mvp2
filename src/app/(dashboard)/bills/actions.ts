@@ -169,3 +169,26 @@ export async function editBill(formData: FormData) {
     revalidatePath('/bills');
     return { success: true };
 }
+
+export async function deleteBillPayment(paymentId: string) {
+    const supabase = await createClient();
+
+    const { data: claimsData, error: authError } = await supabase.auth.getClaims();
+    if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
+
+    const { data, error } = await supabase.rpc('delete_bill_payment', {
+        p_payment_id: paymentId,
+    });
+
+    if (error) {
+        console.error('Error deleting bill payment:', error);
+        return { error: 'Failed to delete payment. Please try again later.' };
+    }
+
+    if (data && typeof data === 'object' && 'error' in (data as any)) {
+        return { error: (data as any).error };
+    }
+
+    revalidatePath('/bills');
+    return { success: true };
+}

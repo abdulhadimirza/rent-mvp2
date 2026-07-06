@@ -7,7 +7,7 @@ export default async function RentPage() {
 
     const query = supabase
         .from('rent_cycles')
-        .select(`*, rent_payments(amount_paid), tenants(name, phone_number, properties(name))`)
+        .select(`*, rent_payments(id, amount_paid, payment_date, created_at), tenants(name, phone_number, properties(name))`)
         .order('due_date', { ascending: false });
 
     const { data: rentCycles } = await query;
