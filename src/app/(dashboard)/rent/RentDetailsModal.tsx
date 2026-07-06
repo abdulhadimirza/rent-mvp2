@@ -32,8 +32,6 @@ export function RentDetailsModal({
         const result = await deleteRentPayment(paymentId);
         if (result?.error) {
             alert(result.error);
-        } else {
-            //onClose(); // Optional: Close or just let the data refresh. But revalidatePath refreshes the background.
         }
         setIsDeleting(null);
     };

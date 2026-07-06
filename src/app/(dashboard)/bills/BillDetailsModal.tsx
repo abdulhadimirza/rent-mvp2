@@ -31,8 +31,6 @@ export function BillDetailsModal({
         const result = await deleteBillPayment(paymentId);
         if (result?.error) {
             alert(result.error);
-        } else {
-            //onClose(); // Optional: Close or just let the data refresh. But revalidatePath refreshes the background.
         }
         setIsDeleting(null);
     };
