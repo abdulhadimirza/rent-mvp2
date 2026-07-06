@@ -2,6 +2,9 @@
 
 .agents/
 
+# Supabase generated types
+types/supabase.ts
+
 # dependencies
 /node_modules
 /.pnp
