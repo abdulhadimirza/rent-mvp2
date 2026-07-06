@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PaymentModal } from './PaymentModal';
 import { BillDetailsModal } from './BillDetailsModal';
@@ -17,10 +17,17 @@ export function BillsClient({ bills }: { bills: any[] }) {
 
     const statusFilter = searchParams.get('status') || 'all';
     const monthFilter = searchParams.get('month') || 'all';
+    const highlightId = searchParams.get('highlight');
 
     const [paymentBillId, setPaymentBillId] = useState<string | null>(null);
     const [detailsBillId, setDetailsBillId] = useState<string | null>(null);
     const [editBillId, setEditBillId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (highlightId) {
+            setDetailsBillId(highlightId);
+        }
+    }, [highlightId]);
 
     const paymentBill = bills.find((b) => b.id === paymentBillId);
     const detailsBill = bills.find((b) => b.id === detailsBillId);
@@ -118,7 +125,9 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                         <tr
                                             key={bill.id}
                                             onClick={() => setDetailsBillId(bill.id)}
-                                            className="hover:bg-slate-50 cursor-pointer transition-colors"
+                                            className={`cursor-pointer transition-colors ${
+                                                highlightId === bill.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'
+                                            }`}
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
                                                 {bill.tenants.name}

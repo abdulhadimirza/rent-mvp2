@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RentPaymentModal } from './RentPaymentModal';
 import { RentDetailsModal } from './RentDetailsModal';
@@ -13,9 +13,17 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    const highlightId = searchParams.get('highlight');
+
     const [paymentRentId, setPaymentRentId] = useState<string | null>(null);
     const [detailsRentId, setDetailsRentId] = useState<string | null>(null);
     const [editRentId, setEditRentId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (highlightId) {
+            setDetailsRentId(highlightId);
+        }
+    }, [highlightId]);
 
     const paymentRent = rentCycles.find((r) => r.id === paymentRentId);
     const detailsRent = rentCycles.find((r) => r.id === detailsRentId);
@@ -60,7 +68,9 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
                                         <tr
                                             key={rentCycle.id}
                                             onClick={() => setDetailsRentId(rentCycle.id)}
-                                            className="hover:bg-slate-50 cursor-pointer transition-colors"
+                                            className={`cursor-pointer transition-colors ${
+                                                highlightId === rentCycle.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'
+                                            }`}
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
                                                 {rentCycle.tenants?.name}
