@@ -43,14 +43,13 @@ export function BillDetailsModal({
     };
 
     return (
-        <Modal 
-            title="Bill Details" 
+        <Modal
+            title="Bill Details"
             maxWidth="lg"
             headerRight={
                 <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                        statusColors[bill.status] || statusColors.unpaid
-                    }`}
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusColors[bill.status] || statusColors.unpaid
+                        }`}
                 >
                     {bill.status}
                 </span>
@@ -106,7 +105,7 @@ export function BillDetailsModal({
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
                             >
-                                    View PDF
+                                View PDF
                                 <ExternalLink className="w-3 h-3 ml-1" />
                             </a>
                         ) : (
@@ -148,23 +147,26 @@ export function BillDetailsModal({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                    disabled={isDeleting !== null}
+                    className="px-4 py-2 text-slate-600 disabled:opacity-50 hover:text-slate-800"
                 >
-                        Close
+                    Close
                 </button>
                 <button
                     type="button"
                     onClick={onEditBill}
-                    className="px-4 py-2 border border-slate-300 text-slate-700 bg-white rounded-md hover:bg-slate-50"
+                    disabled={isDeleting !== null}
+                    className="px-4 py-2 border border-slate-300 text-slate-700 bg-white disabled:opacity-50 rounded-md hover:bg-slate-50"
                 >
-                        Edit
+                    Edit
                 </button>
                 <button
                     type="button"
                     onClick={onRecordPayment}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={isDeleting !== null}
+                    className="px-4 py-2 bg-blue-600 disabled:opacity-50 text-white rounded-md hover:bg-blue-700"
                 >
-                        Record Payment
+                    Record Payment
                 </button>
             </div>
         </Modal>
