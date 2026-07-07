@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/server';
 import { revalidatePath } from 'next/cache';
+import { processRentPaymentSchema, editRentCycleSchema } from '@/lib/schemas';
 
 export async function processRentPayment(formData: FormData) {
     const supabase = await createClient();
@@ -12,20 +13,11 @@ export async function processRentPayment(formData: FormData) {
 
     if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
 
-    const rent_cycle_id = formData.get('rent_cycle_id');
-    if (typeof rent_cycle_id !== 'string' || rent_cycle_id.trim().length === 0) {
-        return { error: 'Invalid or missing Rent Cycle ID.' };
+    const parsed = processRentPaymentSchema.safeParse(Object.fromEntries(formData));
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message };
     }
-
-    const amountPaidRaw = formData.get('amount_paid');
-    if (typeof amountPaidRaw !== 'string' || amountPaidRaw.trim().length === 0) {
-        return { error: 'Payment amount is required.' };
-    }
-
-    const amount_paid = Number(amountPaidRaw);
-    if (isNaN(amount_paid) || !Number.isInteger(amount_paid) || amount_paid <= 0) {
-        return { error: 'Payment amount must be a positive integer.' };
-    }
+    const { rent_cycle_id, amount_paid } = parsed.data;
 
     const { data, error } = await supabase.rpc('process_rent_payment', {
         p_rent_cycle_id: rent_cycle_id,
@@ -52,40 +44,15 @@ export async function editRentCycle(formData: FormData) {
     const { data: claimsData, error: authError } = await supabase.auth.getClaims();
     if (authError || !claimsData?.claims) return { error: 'Not authenticated' };
 
-    const id = formData.get('id');
-    if (typeof id !== 'string' || id.trim().length === 0) {
-        return { error: 'Rent Cycle ID is required.' };
+    const parsed = editRentCycleSchema.safeParse(Object.fromEntries(formData));
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message };
     }
+    const { id, ...updateDataRaw } = parsed.data;
 
-    const updateData: Record<string, unknown> = {};
-
-    if (formData.has('amount_due')) {
-        const amountRaw = formData.get('amount_due');
-        if (typeof amountRaw !== 'string' || amountRaw.trim().length === 0) {
-            return { error: 'Amount due is required if provided.' };
-        }
-        const amount_due = Number(amountRaw);
-        if (isNaN(amount_due) || !Number.isInteger(amount_due) || amount_due < 0) {
-            return { error: 'Amount due must be a valid non-negative whole number.' };
-        }
-        updateData.amount_due = amount_due;
-    }
-
-    if (formData.has('due_date')) {
-        const dateRaw = formData.get('due_date');
-        if (typeof dateRaw !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateRaw.trim())) {
-            return { error: 'Due date must be in YYYY-MM-DD format.' };
-        }
-        updateData.due_date = dateRaw.trim();
-    }
-
-    if (formData.has('billing_month')) {
-        const monthRaw = formData.get('billing_month');
-        if (typeof monthRaw !== 'string' || !/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{4}$/.test(monthRaw.trim())) {
-            return { error: 'Billing month must be in MMM-YYYY format (e.g., May-2026).' };
-        }
-        updateData.billing_month = monthRaw.trim();
-    }
+    const updateData = Object.fromEntries(
+        Object.entries(updateDataRaw).filter(([, v]) => v !== undefined)
+    );
 
     if (Object.keys(updateData).length > 0) {
         const { data, error } = await supabase.rpc('edit_rent_cycle', {

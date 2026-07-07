@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { extractedBillSchema } from '@/lib/schemas';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -63,29 +64,9 @@ export function validateExtractedBill(data: ExtractedBill) {
         throw new Error("The uploaded file is not recognized as a valid utility bill.");
     }
 
-    // Validate bill_type
-    if (typeof data.bill_type !== 'string' || !['Electricity', 'Gas', 'Water'].includes(data.bill_type)) {
-        throw new Error("Invalid or missing bill type.");
-    }
-
-    // Validate billing_month
-    if (typeof data.billing_month !== 'string' || !/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{4}$/.test(data.billing_month)) {
-        throw new Error("Billing month must be in MMM-YYYY format (e.g., May-2026).");
-    }
-
-    // Validate customer_number
-    if (typeof data.customer_number !== 'string' || !/^\d+$/.test(data.customer_number)) {
-        throw new Error("Missing or invalid customer number (must contain only digits).");
-    }
-
-    // Validate amount_due
-    if (typeof data.amount_due !== 'number' || isNaN(data.amount_due) || data.amount_due <= 0) {
-        throw new Error("Amount due must be a positive number.");
-    }
-
-    // Validate due_date
-    if (typeof data.due_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data.due_date)) {
-        throw new Error("Due date must be in YYYY-MM-DD format.");
+    const parsed = extractedBillSchema.safeParse(data);
+    if (!parsed.success) {
+        throw new Error(parsed.error.issues[0].message);
     }
 }
 
