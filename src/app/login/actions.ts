@@ -6,6 +6,8 @@ import { createClient } from '@/lib/server';
 
 const isDev = process.env.NODE_ENV === 'development';
 
+import { headers } from 'next/headers';
+
 export async function login(formData: FormData) {
     const supabase = await createClient();
 
@@ -25,7 +27,7 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout');
-    redirect('/');
+    redirect('/dashboard');
 }
 
 export async function signup(formData: FormData) {
@@ -33,17 +35,21 @@ export async function signup(formData: FormData) {
 
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const origin = (await headers()).get('origin');
 
     const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            emailRedirectTo: `${origin}/auth/confirm`,
+        },
     });
 
     if (error) {
         if (isDev) {
             console.error(error.message);
         }
-        return redirect('/login?message=Could not sign up user');
+        return redirect('/login?mode=signup&message=Could not sign up user');
     }
 
     redirect(
