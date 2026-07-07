@@ -95,7 +95,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                         colSpan={7}
                                         className="px-6 py-8 text-center text-slate-500"
                                     >
-                                        No bills found matching your criteria.
+                                        No bills found.
                                     </td>
                                 </tr>
                             ) : (
