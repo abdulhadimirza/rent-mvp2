@@ -116,7 +116,7 @@ export default async function LoginPage(props: {
                             </p>
                         ) : (
                             <p>
-                                Don't have an account?{' '}
+                                Don&apos;t have an account?{' '}
                                 <Link href="/login?mode=signup" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors ml-1">
                                     Sign up
                                 </Link>
