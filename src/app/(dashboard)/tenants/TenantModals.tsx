@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { addProperty, addTenant, editProperty, editTenant, deleteProperty, deleteTenant } from './actions';
 import { GlobalRentPaymentModal } from './GlobalRentPaymentModal';
+import { Modal } from '@/components/ui/modal';
 
 export function TenantModals({ properties }: { properties: any[] }) {
     const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
@@ -200,19 +201,127 @@ export function TenantModals({ properties }: { properties: any[] }) {
 
             {/* ADD PROPERTY MODAL */}
             {isPropertyModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm w-screen h-screen">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 max-h-screen overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                            Add Property
-                        </h3>
-                        <form onSubmit={handleAddProperty} className="space-y-4">
+                <Modal title="Add Property">
+                    <form onSubmit={handleAddProperty} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Name
+                            </label>
+                            <input
+                                required
+                                name="name"
+                                maxLength={100}
+                                pattern=".*\S.*"
+                                title="Property name cannot be empty or only spaces"
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                placeholder="e.g. Apartment 4B"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Address
+                            </label>
+                            <input
+                                name="address"
+                                maxLength={500}
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                placeholder="Full address"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Electricity Customer Number
+                            </label>
+                            <input
+                                name="electricity_customer_number"
+                                pattern="[0-9]+"
+                                title="Customer number must contain only digits"
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                placeholder="e.g. 0123456789 (Optional)"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Gas Customer Number
+                            </label>
+                            <input
+                                name="gas_customer_number"
+                                pattern="[0-9]+"
+                                title="Customer number must contain only digits"
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                placeholder="e.g. 0123456789 (Optional)"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Water Customer Number
+                            </label>
+                            <input
+                                name="water_customer_number"
+                                pattern="[0-9]+"
+                                title="Customer number must contain only digits"
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                placeholder="e.g. 0123456789 (Optional)"
+                            />
+                        </div>
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                type="button"
+                                onClick={() => setPropertyModalOpen(false)}
+                                disabled={loading}
+                                className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                            >
+                                    Close
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {loading ? 'Saving...' : 'Save Property'}
+                            </button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
+
+            {/* EDIT PROPERTY MODAL */}
+            {isEditPropertyModalOpen && (
+                <Modal title="Edit Property">
+                    {properties.length === 0 ? (
+                        <div className="text-slate-600 mb-4">No properties available.</div>
+                    ) : (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Select Property to Edit
+                            </label>
+                            <select
+                                value={selectedPropertyId}
+                                onChange={(e) => setSelectedPropertyId(e.target.value)}
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                            >
+                                <option value="">-- Select a property --</option>
+                                {properties.map((p) => (
+                                    <option key={p.id} value={p.id}>
+                                        {p.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    {selectedProperty && (
+                        <form key={selectedProperty.id} onSubmit={handleEditProperty} className="space-y-4">
+                            <input type="hidden" name="id" value={selectedProperty.id} />
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Name
+                                        Name
                                 </label>
                                 <input
                                     required
                                     name="name"
+                                    defaultValue={selectedProperty.name}
+                                    onChange={() => handleFieldChange('name')}
                                     maxLength={100}
                                     pattern=".*\S.*"
                                     title="Property name cannot be empty or only spaces"
@@ -222,10 +331,12 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Address
+                                        Address
                                 </label>
                                 <input
                                     name="address"
+                                    defaultValue={selectedProperty.address || ''}
+                                    onChange={() => handleFieldChange('address')}
                                     maxLength={500}
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                     placeholder="Full address"
@@ -233,10 +344,12 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Electricity Customer Number
+                                        Electricity Customer Number
                                 </label>
                                 <input
                                     name="electricity_customer_number"
+                                    defaultValue={getCustomerNumber('Electricity')}
+                                    onChange={() => handleFieldChange('electricity_customer_number')}
                                     pattern="[0-9]+"
                                     title="Customer number must contain only digits"
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
@@ -245,10 +358,12 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Gas Customer Number
+                                        Gas Customer Number
                                 </label>
                                 <input
                                     name="gas_customer_number"
+                                    defaultValue={getCustomerNumber('Gas')}
+                                    onChange={() => handleFieldChange('gas_customer_number')}
                                     pattern="[0-9]+"
                                     title="Customer number must contain only digits"
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
@@ -257,497 +372,363 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Water Customer Number
+                                        Water Customer Number
                                 </label>
                                 <input
                                     name="water_customer_number"
+                                    defaultValue={getCustomerNumber('Water')}
+                                    onChange={() => handleFieldChange('water_customer_number')}
                                     pattern="[0-9]+"
                                     title="Customer number must contain only digits"
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                     placeholder="e.g. 0123456789 (Optional)"
                                 />
                             </div>
-                            <div className="flex justify-end gap-3 mt-6">
+                            <div className="flex justify-between items-center mt-6">
                                 <button
                                     type="button"
-                                    onClick={() => setPropertyModalOpen(false)}
                                     disabled={loading}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
-                                >
-                                    Close
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                >
-                                    {loading ? 'Saving...' : 'Save Property'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* EDIT PROPERTY MODAL */}
-            {isEditPropertyModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm w-screen h-screen">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 max-h-screen overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                            Edit Property
-                        </h3>
-                        {properties.length === 0 ? (
-                            <div className="text-slate-600 mb-4">No properties available.</div>
-                        ) : (
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Select Property to Edit
-                                </label>
-                                <select
-                                    value={selectedPropertyId}
-                                    onChange={(e) => setSelectedPropertyId(e.target.value)}
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                >
-                                    <option value="">-- Select a property --</option>
-                                    {properties.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-
-                        {selectedProperty && (
-                            <form key={selectedProperty.id} onSubmit={handleEditProperty} className="space-y-4">
-                                <input type="hidden" name="id" value={selectedProperty.id} />
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
-                                    </label>
-                                    <input
-                                        required
-                                        name="name"
-                                        defaultValue={selectedProperty.name}
-                                        onChange={() => handleFieldChange('name')}
-                                        maxLength={100}
-                                        pattern=".*\S.*"
-                                        title="Property name cannot be empty or only spaces"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="e.g. Apartment 4B"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Address
-                                    </label>
-                                    <input
-                                        name="address"
-                                        defaultValue={selectedProperty.address || ''}
-                                        onChange={() => handleFieldChange('address')}
-                                        maxLength={500}
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="Full address"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Electricity Customer Number
-                                    </label>
-                                    <input
-                                        name="electricity_customer_number"
-                                        defaultValue={getCustomerNumber('Electricity')}
-                                        onChange={() => handleFieldChange('electricity_customer_number')}
-                                        pattern="[0-9]+"
-                                        title="Customer number must contain only digits"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="e.g. 0123456789 (Optional)"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Gas Customer Number
-                                    </label>
-                                    <input
-                                        name="gas_customer_number"
-                                        defaultValue={getCustomerNumber('Gas')}
-                                        onChange={() => handleFieldChange('gas_customer_number')}
-                                        pattern="[0-9]+"
-                                        title="Customer number must contain only digits"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="e.g. 0123456789 (Optional)"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Water Customer Number
-                                    </label>
-                                    <input
-                                        name="water_customer_number"
-                                        defaultValue={getCustomerNumber('Water')}
-                                        onChange={() => handleFieldChange('water_customer_number')}
-                                        pattern="[0-9]+"
-                                        title="Customer number must contain only digits"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="e.g. 0123456789 (Optional)"
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center mt-6">
-                                    <button
-                                        type="button"
-                                        disabled={loading}
-                                        onClick={async () => {
-                                            if (window.confirm('Are you sure you want to delete this property? This will also delete all associated tenants and bills.')) {
-                                                setLoading(true);
-                                                await deleteProperty(selectedProperty.id);
-                                                setLoading(false);
-                                                setEditPropertyModalOpen(false);
-                                                setSelectedPropertyId('');
-                                            }
-                                        }}
-                                        className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
-                                    >
-                                        Delete Property
-                                    </button>
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setEditPropertyModalOpen(false);
-                                                setSelectedPropertyId('');
-                                            }}
-                                            disabled={loading}
-                                            className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
-                                        >
-                                            Close
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                        >
-                                            {loading ? 'Saving...' : 'Save Changes'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        )}
-
-                        {!selectedProperty && (
-                            <div className="flex justify-end mt-6">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEditPropertyModalOpen(false);
-                                        setSelectedPropertyId('');
+                                    onClick={async () => {
+                                        if (window.confirm('Are you sure you want to delete this property? This will also delete all associated tenants and bills.')) {
+                                            setLoading(true);
+                                            await deleteProperty(selectedProperty.id);
+                                            setLoading(false);
+                                            setEditPropertyModalOpen(false);
+                                            setSelectedPropertyId('');
+                                        }
                                     }}
-                                    disabled={loading}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                                 >
-                                    Close
+                                        Delete Property
                                 </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* ADD TENANT MODAL */}
-            {isTenantModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm w-screen h-screen">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 max-h-screen overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                            Add Tenant
-                        </h3>
-                        {availableProperties.length === 0 ? (
-                            <div className="text-slate-600 mb-4">No properties available for a new tenant. Create a property or free one up first.</div>
-                        ) : (
-                            <form onSubmit={handleAddTenant} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
-                                    </label>
-                                    <input
-                                        required
-                                        name="name"
-                                        maxLength={100}
-                                        pattern=".*\S.*"
-                                        title="Tenant name cannot be empty or only spaces"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Phone Number
-                                    </label>
-                                    <input
-                                        required
-                                        name="phone_number"
-                                        maxLength={20}
-                                        pattern="^\+?[0-9]{7,15}$"
-                                        title="Valid phone number (7-15 digits, optional + prefix)"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="+923001234567"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Property Assignment
-                                    </label>
-                                    <select
-                                        required
-                                        name="property_id"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    >
-                                        <option value="">Select a property</option>
-                                        {availableProperties.map((p) => (
-                                            <option key={p.id} value={p.id}>
-                                                {p.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Rent Amount
-                                    </label>
-                                    <input
-                                        required
-                                        name="rent_amount"
-                                        type="number"
-                                        step="0.01"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="1000.00"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Monthly Due Day
-                                    </label>
-                                    <input
-                                        required
-                                        name="due_date_day"
-                                        type="number"
-                                        min="1"
-                                        max="31"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="5"
-                                    />
-                                </div>
-                                <div className="flex justify-end gap-3 mt-6">
+                                <div className="flex gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => setTenantModalOpen(false)}
+                                        onClick={() => {
+                                            setEditPropertyModalOpen(false);
+                                            setSelectedPropertyId('');
+                                        }}
                                         disabled={loading}
                                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                     >
-                                        Close
+                                            Close
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={loading}
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {loading ? 'Saving...' : 'Save Tenant'}
+                                        {loading ? 'Saving...' : 'Save Changes'}
                                     </button>
                                 </div>
-                            </form>
-                        )}
-                        {availableProperties.length === 0 && (
-                            <div className="flex justify-end mt-6">
+                            </div>
+                        </form>
+                    )}
+
+                    {!selectedProperty && (
+                        <div className="flex justify-end mt-6">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setEditPropertyModalOpen(false);
+                                    setSelectedPropertyId('');
+                                }}
+                                disabled={loading}
+                                className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                            >
+                                    Close
+                            </button>
+                        </div>
+                    )}
+                </Modal>
+            )}
+
+            {/* ADD TENANT MODAL */}
+            {isTenantModalOpen && (
+                <Modal title="Add Tenant">
+                    {availableProperties.length === 0 ? (
+                        <div className="text-slate-600 mb-4">No properties available for a new tenant. Create a property or free one up first.</div>
+                    ) : (
+                        <form onSubmit={handleAddTenant} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Name
+                                </label>
+                                <input
+                                    required
+                                    name="name"
+                                    maxLength={100}
+                                    pattern=".*\S.*"
+                                    title="Tenant name cannot be empty or only spaces"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Phone Number
+                                </label>
+                                <input
+                                    required
+                                    name="phone_number"
+                                    maxLength={20}
+                                    pattern="^\+?[0-9]{7,15}$"
+                                    title="Valid phone number (7-15 digits, optional + prefix)"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="+923001234567"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Property Assignment
+                                </label>
+                                <select
+                                    required
+                                    name="property_id"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                >
+                                    <option value="">Select a property</option>
+                                    {availableProperties.map((p) => (
+                                        <option key={p.id} value={p.id}>
+                                            {p.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Rent Amount
+                                </label>
+                                <input
+                                    required
+                                    name="rent_amount"
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="1000.00"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Monthly Due Day
+                                </label>
+                                <input
+                                    required
+                                    name="due_date_day"
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="5"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-3 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => setTenantModalOpen(false)}
                                     disabled={loading}
                                     className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
-                                    Close
+                                        Close
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {loading ? 'Saving...' : 'Save Tenant'}
                                 </button>
                             </div>
-                        )}
-                    </div>
-                </div>
+                        </form>
+                    )}
+                    {availableProperties.length === 0 && (
+                        <div className="flex justify-end mt-6">
+                            <button
+                                type="button"
+                                onClick={() => setTenantModalOpen(false)}
+                                disabled={loading}
+                                className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                            >
+                                    Close
+                            </button>
+                        </div>
+                    )}
+                </Modal>
             )}
 
             {/* EDIT TENANT MODAL */}
             {isEditTenantModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm w-screen h-screen">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 max-h-screen overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-slate-900">
-                            Edit Tenant
-                        </h3>
-                        {allTenants.length === 0 ? (
-                            <div className="text-slate-600 mb-4">No tenants available.</div>
-                        ) : (
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <Modal title="Edit Tenant">
+                    {allTenants.length === 0 ? (
+                        <div className="text-slate-600 mb-4">No tenants available.</div>
+                    ) : (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
                                     Select Tenant to Edit
+                            </label>
+                            <select
+                                value={selectedTenantId}
+                                onChange={(e) => setSelectedTenantId(e.target.value)}
+                                className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                            >
+                                <option value="">-- Select a tenant --</option>
+                                {allTenants.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                        {t.name} ({t.property_name})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    {selectedTenant && (
+                        <form key={selectedTenant.id} onSubmit={handleEditTenant} className="space-y-4">
+                            <input type="hidden" name="id" value={selectedTenant.id} />
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Name
+                                </label>
+                                <input
+                                    required
+                                    name="name"
+                                    defaultValue={selectedTenant.name}
+                                    onChange={() => handleFieldChange('name')}
+                                    maxLength={100}
+                                    pattern=".*\S.*"
+                                    title="Tenant name cannot be empty or only spaces"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Phone Number
+                                </label>
+                                <input
+                                    required
+                                    name="phone_number"
+                                    defaultValue={selectedTenant.phone_number}
+                                    onChange={() => handleFieldChange('phone_number')}
+                                    maxLength={20}
+                                    pattern="^\+?[0-9]{7,15}$"
+                                    title="Valid phone number (7-15 digits, optional + prefix)"
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="+923001234567"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                        Property Assignment
                                 </label>
                                 <select
-                                    value={selectedTenantId}
-                                    onChange={(e) => setSelectedTenantId(e.target.value)}
+                                    required
+                                    name="property_id"
+                                    defaultValue={selectedTenant.property_id}
+                                    onChange={() => handleFieldChange('property_id')}
                                     className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                                 >
-                                    <option value="">-- Select a tenant --</option>
-                                    {allTenants.map((t) => (
-                                        <option key={t.id} value={t.id}>
-                                            {t.name} ({t.property_name})
-                                        </option>
-                                    ))}
+                                    <option value="">Select a property</option>
+                                    {/* Show available properties PLUS the property currently assigned to this tenant */}
+                                    {properties
+                                        .filter((p) => {
+                                            const tenants = Array.isArray(p.tenants) ? p.tenants : p.tenants ? [p.tenants] : [];
+                                            return tenants.length === 0 || p.id === selectedTenant.property_id;
+                                        })
+                                        .map((p) => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.name}
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
-                        )}
-
-                        {selectedTenant && (
-                            <form key={selectedTenant.id} onSubmit={handleEditTenant} className="space-y-4">
-                                <input type="hidden" name="id" value={selectedTenant.id} />
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
-                                    </label>
-                                    <input
-                                        required
-                                        name="name"
-                                        defaultValue={selectedTenant.name}
-                                        onChange={() => handleFieldChange('name')}
-                                        maxLength={100}
-                                        pattern=".*\S.*"
-                                        title="Tenant name cannot be empty or only spaces"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Phone Number
-                                    </label>
-                                    <input
-                                        required
-                                        name="phone_number"
-                                        defaultValue={selectedTenant.phone_number}
-                                        onChange={() => handleFieldChange('phone_number')}
-                                        maxLength={20}
-                                        pattern="^\+?[0-9]{7,15}$"
-                                        title="Valid phone number (7-15 digits, optional + prefix)"
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="+923001234567"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Property Assignment
-                                    </label>
-                                    <select
-                                        required
-                                        name="property_id"
-                                        defaultValue={selectedTenant.property_id}
-                                        onChange={() => handleFieldChange('property_id')}
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    >
-                                        <option value="">Select a property</option>
-                                        {/* Show available properties PLUS the property currently assigned to this tenant */}
-                                        {properties
-                                            .filter((p) => {
-                                                const tenants = Array.isArray(p.tenants) ? p.tenants : p.tenants ? [p.tenants] : [];
-                                                return tenants.length === 0 || p.id === selectedTenant.property_id;
-                                            })
-                                            .map((p) => (
-                                                <option key={p.id} value={p.id}>
-                                                    {p.name}
-                                                </option>
-                                            ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
                                         Rent Amount
-                                    </label>
-                                    <input
-                                        required
-                                        name="rent_amount"
-                                        type="number"
-                                        step="0.01"
-                                        defaultValue={selectedTenant.rent_amount}
-                                        onChange={() => handleFieldChange('rent_amount')}
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="1000.00"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                </label>
+                                <input
+                                    required
+                                    name="rent_amount"
+                                    type="number"
+                                    step="0.01"
+                                    defaultValue={selectedTenant.rent_amount}
+                                    onChange={() => handleFieldChange('rent_amount')}
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="1000.00"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
                                         Monthly Due Day
-                                    </label>
-                                    <input
-                                        required
-                                        name="due_date_day"
-                                        type="number"
-                                        min="1"
-                                        max="31"
-                                        defaultValue={selectedTenant.due_date_day}
-                                        onChange={() => handleFieldChange('due_date_day')}
-                                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                        placeholder="5"
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center mt-6">
-                                    <button
-                                        type="button"
-                                        disabled={loading}
-                                        onClick={async () => {
-                                            if (window.confirm('Are you sure you want to delete this tenant?')) {
-                                                setLoading(true);
-                                                await deleteTenant(selectedTenant.id);
-                                                setLoading(false);
-                                                setEditTenantModalOpen(false);
-                                                setSelectedTenantId('');
-                                            }
-                                        }}
-                                        className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
-                                    >
-                                        Delete Tenant
-                                    </button>
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setEditTenantModalOpen(false);
-                                                setSelectedTenantId('');
-                                            }}
-                                            disabled={loading}
-                                            className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
-                                        >
-                                            Close
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                        >
-                                            {loading ? 'Saving...' : 'Save Changes'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        )}
-
-                        {!selectedTenant && (
-                            <div className="flex justify-end mt-6">
+                                </label>
+                                <input
+                                    required
+                                    name="due_date_day"
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    defaultValue={selectedTenant.due_date_day}
+                                    onChange={() => handleFieldChange('due_date_day')}
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                                    placeholder="5"
+                                />
+                            </div>
+                            <div className="flex justify-between items-center mt-6">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setEditTenantModalOpen(false);
-                                        setSelectedTenantId('');
-                                    }}
                                     disabled={loading}
-                                    className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                    onClick={async () => {
+                                        if (window.confirm('Are you sure you want to delete this tenant?')) {
+                                            setLoading(true);
+                                            await deleteTenant(selectedTenant.id);
+                                            setLoading(false);
+                                            setEditTenantModalOpen(false);
+                                            setSelectedTenantId('');
+                                        }
+                                    }}
+                                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                                 >
-                                    Close
+                                        Delete Tenant
                                 </button>
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditTenantModalOpen(false);
+                                            setSelectedTenantId('');
+                                        }}
+                                        disabled={loading}
+                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                                    >
+                                            Close
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        {loading ? 'Saving...' : 'Save Changes'}
+                                    </button>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                </div>
+                        </form>
+                    )}
+
+                    {!selectedTenant && (
+                        <div className="flex justify-end mt-6">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setEditTenantModalOpen(false);
+                                    setSelectedTenantId('');
+                                }}
+                                disabled={loading}
+                                className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                            >
+                                    Close
+                            </button>
+                        </div>
+                    )}
+                </Modal>
             )}
             {/* GLOBAL RENT PAYMENT MODAL */}
             {isGlobalRentModalOpen && (
