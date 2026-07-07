@@ -1,53 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { PaymentModal } from './PaymentModal';
 import { BillDetailsModal } from './BillDetailsModal';
 import { EditBillModal } from './EditBillModal';
-import { sendWhatsAppReminder } from './actions';
-import { MessageCircle } from 'lucide-react';
 import { formatRupees } from '@/lib/utils';
 
 
+const statusColors: Record<string, string> = {
+    paid: 'bg-green-100 text-green-800',
+    partial: 'bg-yellow-100 text-yellow-800',
+    unpaid: 'bg-red-100 text-red-800',
+};
+
 export function BillsClient({ bills }: { bills: any[] }) {
-    const router = useRouter();
     const searchParams = useSearchParams();
 
-    const statusFilter = searchParams.get('status') || 'all';
-    const monthFilter = searchParams.get('month') || 'all';
     const highlightId = searchParams.get('highlight');
 
     const [paymentBillId, setPaymentBillId] = useState<string | null>(null);
-    const [detailsBillId, setDetailsBillId] = useState<string | null>(null);
+    const [detailsBillId, setDetailsBillId] = useState<string | null>(highlightId);
     const [editBillId, setEditBillId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (highlightId) {
-            setDetailsBillId(highlightId);
-        }
-    }, [highlightId]);
+    const [prevHighlightId, setPrevHighlightId] = useState(highlightId);
+    if (highlightId !== prevHighlightId) {
+        setPrevHighlightId(highlightId);
+        setDetailsBillId(highlightId);
+    }
 
     const paymentBill = bills.find((b) => b.id === paymentBillId);
     const detailsBill = bills.find((b) => b.id === detailsBillId);
     const editBill = bills.find((b) => b.id === editBillId);
-    const [sendingReminder, setSendingReminder] = useState<string | null>(null);
-
-    const handleFilterChange = (key: string, value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (value === 'all') params.delete(key);
-        else params.set(key, value);
-        router.push(`/bills?${params.toString()}`);
-    };
-
-    const handleReminder = async (e: React.MouseEvent, bill: any) => {
-        e.stopPropagation();
-        setSendingReminder(bill.id);
-        await sendWhatsAppReminder(bill.id);
-        alert('WhatsApp reminder sent! (Mock check console)');
-        setSendingReminder(null);
-    };
 
     return (
         <div>
@@ -125,9 +110,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
                                         <tr
                                             key={bill.id}
                                             onClick={() => setDetailsBillId(bill.id)}
-                                            className={`cursor-pointer transition-colors ${
-                                                highlightId === bill.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'
-                                            }`}
+                                            className={`cursor-pointer transition-colors ${highlightId === bill.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'}`}
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
                                                 {bill.tenants.name}
@@ -150,14 +133,7 @@ export function BillsClient({ bills }: { bills: any[] }) {
 
                                             <td className="px-6 py-4">
                                                 <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                           ${bill.status === 'paid'
-                                            ? 'bg-green-100 text-green-800'
-                                            : bill.status === 'partial'
-                                                ? 'bg-yellow-100 text-yellow-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }
-                         `}
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusColors[bill.status] || statusColors.unpaid}`}
                                                 >
                                                     {bill.status}
                                                 </span>

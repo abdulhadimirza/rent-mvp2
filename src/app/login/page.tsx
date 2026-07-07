@@ -1,7 +1,7 @@
 import { login, signup } from './actions';
 
 export default async function LoginPage(props: {
-  searchParams: Promise<{ message: string }>;
+    searchParams: Promise<{ message: string }>;
 }) {
     const searchParams = await props.searchParams;
 
@@ -10,17 +10,17 @@ export default async function LoginPage(props: {
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg border border-slate-100">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
-            Tenant Bill Automator
+                        Rent MVP
                     </h2>
                     <p className="mt-2 text-center text-sm text-slate-600">
-            Sign in to manage your properties and tenants
+                        Sign in to manage your properties and tenants
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" action={login}>
                     <div className="rounded-md shadow-sm -space-y-px flex flex-col gap-4">
                         <div>
                             <label htmlFor="email-address" className="sr-only">
-                Email address
+                                Email address
                             </label>
                             <input
                                 id="email-address"
@@ -34,7 +34,7 @@ export default async function LoginPage(props: {
                         </div>
                         <div>
                             <label htmlFor="password" className="sr-only">
-                Password
+                                Password
                             </label>
                             <input
                                 id="password"
@@ -56,11 +56,7 @@ export default async function LoginPage(props: {
                     )*/
                         searchParams?.message && (
                             <div
-                                className={`p-4 text-sm rounded-md border ${
-                                    searchParams.message.includes('verify')
-                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100' // Green for success/verify
-                                        : 'bg-red-50 text-red-700 border-red-100' // Red for errors
-                                }`}
+                                className={`p-4 text-sm rounded-md border ${searchParams.message.includes('verify') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}
                             >
                                 {searchParams.message}
                             </div>
@@ -72,13 +68,13 @@ export default async function LoginPage(props: {
                             formAction={login}
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         >
-              Sign in
+                            Sign in
                         </button>
                         <button
                             formAction={signup}
                             className="group relative w-full flex justify-center py-2 px-4 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         >
-              Sign up
+                            Sign up
                         </button>
                     </div>
                 </form>

@@ -6,6 +6,12 @@ import { ExternalLink, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { deleteBillPayment } from './actions';
 
+const statusColors: Record<string, string> = {
+    paid: 'bg-green-100 text-green-800',
+    partial: 'bg-yellow-100 text-yellow-800',
+    unpaid: 'bg-red-100 text-red-800',
+};
+
 export function BillDetailsModal({
     bill,
     onClose,
@@ -43,14 +49,9 @@ export function BillDetailsModal({
                         Bill Details
                     </h3>
                     <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                            ${bill.status === 'paid'
-                                ? 'bg-green-100 text-green-800'
-                                : bill.status === 'partial'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                            }
-                        `}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                            statusColors[bill.status] || statusColors.unpaid
+                        }`}
                     >
                         {bill.status}
                     </span>
@@ -120,7 +121,7 @@ export function BillDetailsModal({
                     <div className="mb-8">
                         <h4 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-100 pb-2">Payment History</h4>
                         <div className="space-y-3">
-                            {bill.bill_payments.map((payment: any, index: number) => {
+                            {bill.bill_payments.map((payment: any) => {
                                 return (
                                     <div key={payment.id} className="flex items-center justify-between text-sm">
                                         <div>

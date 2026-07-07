@@ -48,7 +48,8 @@ export async function processBillFile(blobUrl: string) {
         return { success: true, message: 'Processing started in background.' };
     } catch (error: unknown) {
         console.error('Error processing bill file:', error);
-        console.log(process.env.INNGEST_DEV);
+        console.log('Does INNGEST_DEV exist?', process.env.INNGEST_DEV);
+
         try {
             await del(blobUrl, { token: process.env.BLOB_READ_WRITE_TOKEN });
         } catch (cleanupError) {

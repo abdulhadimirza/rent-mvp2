@@ -1,29 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { RentPaymentModal } from './RentPaymentModal';
 import { RentDetailsModal } from './RentDetailsModal';
 import { EditRentModal } from './EditRentModal';
 import { formatRupees } from '@/lib/utils';
 
 
+const statusColors: Record<string, string> = {
+    paid: 'bg-green-100 text-green-800',
+    partial: 'bg-yellow-100 text-yellow-800',
+    unpaid: 'bg-red-100 text-red-800',
+};
+
 export function RentClient({ rentCycles }: { rentCycles: any[] }) {
-    const router = useRouter();
     const searchParams = useSearchParams();
 
     const highlightId = searchParams.get('highlight');
 
     const [paymentRentId, setPaymentRentId] = useState<string | null>(null);
-    const [detailsRentId, setDetailsRentId] = useState<string | null>(null);
+    const [detailsRentId, setDetailsRentId] = useState<string | null>(highlightId);
     const [editRentId, setEditRentId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (highlightId) {
-            setDetailsRentId(highlightId);
-        }
-    }, [highlightId]);
+    const [prevHighlightId, setPrevHighlightId] = useState(highlightId);
+    if (highlightId !== prevHighlightId) {
+        setPrevHighlightId(highlightId);
+        setDetailsRentId(highlightId);
+    }
 
     const paymentRent = rentCycles.find((r) => r.id === paymentRentId);
     const detailsRent = rentCycles.find((r) => r.id === detailsRentId);
@@ -68,9 +73,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
                                         <tr
                                             key={rentCycle.id}
                                             onClick={() => setDetailsRentId(rentCycle.id)}
-                                            className={`cursor-pointer transition-colors ${
-                                                highlightId === rentCycle.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'
-                                            }`}
+                                            className={`cursor-pointer transition-colors ${highlightId === rentCycle.id ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'}`}
                                         >
                                             <td className="px-6 py-4 font-medium text-slate-900">
                                                 {rentCycle.tenants?.name}
@@ -89,14 +92,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                           ${rentCycle.status === 'paid'
-                                            ? 'bg-green-100 text-green-800'
-                                            : rentCycle.status === 'partial'
-                                                ? 'bg-yellow-100 text-yellow-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }
-                         `}
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusColors[rentCycle.status] || statusColors.unpaid}`}
                                                 >
                                                     {rentCycle.status}
                                                 </span>

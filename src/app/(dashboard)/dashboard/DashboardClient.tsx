@@ -5,7 +5,33 @@ import { DollarSign, Users, TrendingUp, Receipt, Home, FileText, Activity } from
 import { formatRupees } from '@/lib/utils';
 import Link from 'next/link';
 
-export function DashboardClient({ data }: { data: any }) {
+interface OutstandingPayment {
+    id: string;
+    type: string;
+    tenant_name: string;
+    property_name: string;
+    due_date: string;
+    balance: number;
+    link: string;
+}
+
+interface RecentActivity {
+    id: string;
+    type: string;
+    tenant_name: string;
+    amount: number;
+    created_at: string;
+}
+
+interface DashboardData {
+    active_portfolio: number;
+    payments_received: number;
+    pending_balance: number;
+    outstanding_payments?: OutstandingPayment[];
+    recent_activity?: RecentActivity[];
+}
+
+export function DashboardClient({ data }: { data: DashboardData }) {
     if (!data) return <div className="text-slate-500">Failed to load dashboard data.</div>;
 
     const {
@@ -120,7 +146,7 @@ export function DashboardClient({ data }: { data: any }) {
                                         </td>
                                     </tr>
                                 ) : (
-                                    outstanding_payments.map((item: any) => (
+                                    outstanding_payments.map((item: OutstandingPayment) => (
                                         <tr
                                             key={item.id + item.type}
                                             className="hover:bg-slate-50 transition-colors"
@@ -179,7 +205,7 @@ export function DashboardClient({ data }: { data: any }) {
                             </div>
                         ) : (
                             <ul className="divide-y divide-slate-100">
-                                {recent_activity.map((activity: any) => (
+                                {recent_activity.map((activity: RecentActivity) => (
                                     <li key={activity.id + activity.type} className="px-6 py-4 hover:bg-slate-50 transition-colors">
                                         <div className="flex justify-between items-start mb-1">
                                             <span className="font-medium text-slate-900 text-sm">{activity.tenant_name}</span>

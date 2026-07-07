@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { UploadCloud, FileText, Cpu, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { UploadCloud, FileText, Cpu, CheckCircle2, AlertCircle } from 'lucide-react';
 import { upload } from '@vercel/blob/client';
 import { processBillFile } from './actions';
 

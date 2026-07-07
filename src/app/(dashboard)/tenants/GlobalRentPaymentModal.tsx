@@ -1,19 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getUnpaidRentCycles } from './actions';
 import { RentPaymentForm } from '@/components/RentPaymentForm';
 import { formatRupees } from '@/lib/utils';
+
+interface Tenant {
+    id: string;
+    name: string;
+    property_name: string;
+}
+
+interface RentPayment {
+    id: string;
+    amount_paid: number | string;
+    payment_date?: string;
+    created_at?: string;
+}
+
+interface RentCycle {
+    id: string;
+    billing_month: string;
+    amount_due: number | string;
+    rent_payments?: RentPayment | RentPayment[];
+    [key: string]: unknown;
+}
 
 export function GlobalRentPaymentModal({
     tenants,
     onClose,
 }: {
-    tenants: any[];
+    tenants: Tenant[];
     onClose: () => void;
 }) {
     const [selectedTenantId, setSelectedTenantId] = useState<string>('');
-    const [rentCycles, setRentCycles] = useState<any[]>([]);
+    const [rentCycles, setRentCycles] = useState<RentCycle[]>([]);
     const [selectedCycleId, setSelectedCycleId] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -30,17 +51,15 @@ export function GlobalRentPaymentModal({
         setLoading(false);
     };
 
-    useEffect(() => {
+    const handleTenantChange = (tenantId: string) => {
+        setSelectedTenantId(tenantId);
         setRentCycles([]);
         setSelectedCycleId('');
         setError(null);
-
-        if (!selectedTenantId) {
-            return;
+        if (tenantId) {
+            fetchCycles(tenantId);
         }
-
-        fetchCycles(selectedTenantId);
-    }, [selectedTenantId]);
+    };
 
     const selectedCycle = rentCycles.find((c) => c.id === selectedCycleId);
 
@@ -61,7 +80,7 @@ export function GlobalRentPaymentModal({
                             </label>
                             <select
                                 value={selectedTenantId}
-                                onChange={(e) => setSelectedTenantId(e.target.value)}
+                                onChange={(e) => handleTenantChange(e.target.value)}
                                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
                             >
                                 <option value="">-- Select a tenant --</option>
@@ -102,7 +121,7 @@ export function GlobalRentPaymentModal({
                                         <option value="">-- Select an unpaid rent cycle --</option>
                                         {rentCycles.map((c) => {
                                             const payments = Array.isArray(c.rent_payments) ? c.rent_payments : (c.rent_payments ? [c.rent_payments] : []);
-                                            const paid = payments.reduce((acc: number, p: any) => acc + Number(p.amount_paid), 0);
+                                            const paid = payments.reduce((acc: number, p: RentPayment) => acc + Number(p.amount_paid), 0);
                                             const remaining = Math.max(0, Number(c.amount_due) - paid);
                                             return (
                                                 <option key={c.id} value={c.id}>
