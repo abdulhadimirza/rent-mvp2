@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import { editBill } from './actions';
 import { Modal } from '@/components/ui/modal';
 
@@ -13,20 +11,15 @@ export function EditBillModal({
     bill: any;
     onClose: () => void;
 }) {
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [dirtyFields, setDirtyFields] = useState<Record<string, boolean>>({});
-
-    useEffect(() => {
-        setDirtyFields({});
-    }, [bill.id]);
 
     const handleFieldChange = (fieldName: string) => {
         setDirtyFields((prev) => ({ ...prev, [fieldName]: true }));
     };
 
-    async function handleSave(e: React.SubmitEvent<HTMLFormElement>) {
+    function handleSave(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setLoading(true);
 
         const rawFormData = new FormData(e.currentTarget);
         const filteredFormData = new FormData();
@@ -51,16 +44,17 @@ export function EditBillModal({
         }
 
         if (hasChanges) {
-            const result = await editBill(filteredFormData);
-            if (result.error) {
-                alert(result.error);
-                setLoading(false);
-                return;
-            }
+            startTransition(async () => {
+                const result = await editBill(filteredFormData);
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    onClose();
+                }
+            });
+        } else {
+            onClose();
         }
-
-        setLoading(false);
-        onClose();
     }
 
     const formattedDate = bill.due_date
@@ -135,17 +129,17 @@ export function EditBillModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        disabled={loading}
+                        disabled={isPending}
                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                     >
                             Close
                     </button>
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={isPending}
                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                     >
-                        {loading ? 'Saving...' : 'Save Changes'}
+                        {isPending ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </form>

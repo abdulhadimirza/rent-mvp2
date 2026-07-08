@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Home, Users, Upload, LogOut, FileText, Wallet } from 'lucide-react';
+import { MobileNav } from '@/components/MobileNav';
 
 export default async function DashboardLayout({
     children,
@@ -7,9 +8,11 @@ export default async function DashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex flex-col md:flex-row h-screen bg-slate-50 overflow-hidden">
+            <MobileNav />
+
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
+            <aside className="w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
                 <div className="h-16 flex items-center px-6 border-b border-slate-200">
                     <h1 className="text-xl font-bold text-slate-800">Rent MVP</h1>
                 </div>

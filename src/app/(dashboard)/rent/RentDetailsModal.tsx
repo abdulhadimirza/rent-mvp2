@@ -2,7 +2,7 @@
 'use client';
 
 import { formatRupees } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Trash2 } from 'lucide-react';
 import { deleteRentPayment } from './actions';
 import { Modal } from '@/components/ui/modal';
@@ -32,15 +32,18 @@ export function RentDetailsModal({
     const remaining = Math.max(0, Number(rentCycle.amount_due) - paid);
 
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
 
-    const handleDeletePayment = async (paymentId: string) => {
+    const handleDeletePayment = (paymentId: string) => {
         if (!confirm('Are you sure you want to delete this payment?')) return;
         setIsDeleting(paymentId);
-        const result = await deleteRentPayment(paymentId);
-        if (result?.error) {
-            alert(result.error);
-        }
-        setIsDeleting(null);
+        startTransition(async () => {
+            const result = await deleteRentPayment(paymentId);
+            if (result?.error) {
+                alert(result.error);
+            }
+            setIsDeleting(null);
+        });
     };
 
     return (
@@ -108,7 +111,7 @@ export function RentDetailsModal({
                                     </div>
                                     <button
                                         onClick={() => handleDeletePayment(payment.id)}
-                                        disabled={isDeleting !== null}
+                                        disabled={isDeleting !== null || isPending}
                                         className="text-red-500 hover:text-red-700 disabled:opacity-50 p-1.5 hover:bg-red-50 rounded-md transition-colors"
                                         title="Delete payment"
                                     >
@@ -125,7 +128,7 @@ export function RentDetailsModal({
                 <button
                     type="button"
                     onClick={onClose}
-                    disabled={isDeleting !== null}
+                    disabled={isDeleting !== null || isPending}
                     className="px-4 py-2 text-slate-600 disabled:opacity-50 hover:text-slate-800"
                 >
                     Close
@@ -133,7 +136,7 @@ export function RentDetailsModal({
                 <button
                     type="button"
                     onClick={onEditRent}
-                    disabled={isDeleting !== null}
+                    disabled={isDeleting !== null || isPending}
                     className="px-4 py-2 border border-slate-300 text-slate-700 bg-white disabled:opacity-50 rounded-md hover:bg-slate-50"
                 >
                     Edit
@@ -141,7 +144,7 @@ export function RentDetailsModal({
                 <button
                     type="button"
                     onClick={onRecordPayment}
-                    disabled={isDeleting !== null}
+                    disabled={isDeleting !== null || isPending}
                     className="px-4 py-2 bg-blue-600 disabled:opacity-50 text-white rounded-md hover:bg-blue-700"
                 >
                     Record Payment

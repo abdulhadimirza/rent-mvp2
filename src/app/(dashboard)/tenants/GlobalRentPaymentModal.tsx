@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { getUnpaidRentCycles } from './actions';
 import { RentPaymentForm } from '@/components/RentPaymentForm';
 import { formatRupees } from '@/lib/utils';
@@ -37,19 +37,19 @@ export function GlobalRentPaymentModal({
     const [selectedTenantId, setSelectedTenantId] = useState<string>('');
     const [rentCycles, setRentCycles] = useState<RentCycle[]>([]);
     const [selectedCycleId, setSelectedCycleId] = useState<string>('');
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
 
-    const fetchCycles = async (tenantId: string) => {
-        setLoading(true);
-        setError(null);
-        const res = await getUnpaidRentCycles(tenantId);
-        if (res.error) {
-            setError(res.error);
-        } else if (res.data) {
-            setRentCycles(res.data);
-        }
-        setLoading(false);
+    const fetchCycles = (tenantId: string) => {
+        startTransition(async () => {
+            setError(null);
+            const res = await getUnpaidRentCycles(tenantId);
+            if (res.error) {
+                setError(res.error);
+            } else if (res.data) {
+                setRentCycles(res.data);
+            }
+        });
     };
 
     const handleTenantChange = (tenantId: string) => {
@@ -93,7 +93,7 @@ export function GlobalRentPaymentModal({
                             <label className="block text-sm font-medium text-slate-700 mb-1">
                                     Select Rent Cycle
                             </label>
-                            {loading ? (
+                            {isPending ? (
                                 <div className="text-sm text-slate-500">Loading rent cycles...</div>
                             ) : error ? (
                                 <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-md">

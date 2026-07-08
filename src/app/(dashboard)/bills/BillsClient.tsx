@@ -3,9 +3,11 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { PaymentModal } from './PaymentModal';
-import { BillDetailsModal } from './BillDetailsModal';
-import { EditBillModal } from './EditBillModal';
+import dynamic from 'next/dynamic';
+
+const PaymentModal = dynamic(() => import('./PaymentModal').then((mod) => mod.PaymentModal));
+const BillDetailsModal = dynamic(() => import('./BillDetailsModal').then((mod) => mod.BillDetailsModal));
+const EditBillModal = dynamic(() => import('./EditBillModal').then((mod) => mod.EditBillModal));
 import { formatRupees } from '@/lib/utils';
 
 
@@ -147,15 +149,17 @@ export function BillsClient({ bills }: { bills: any[] }) {
                 </div>
             </div>
 
-            {paymentBill && (
+            {paymentBill ? (
                 <PaymentModal
+                    key={paymentBill.id}
                     bill={paymentBill}
                     onClose={() => setPaymentBillId(null)}
                 />
-            )}
+            ) : null}
 
-            {detailsBill && (
+            {detailsBill ? (
                 <BillDetailsModal
+                    key={detailsBill.id}
                     bill={detailsBill}
                     onClose={() => setDetailsBillId(null)}
                     onRecordPayment={() => {
@@ -167,14 +171,15 @@ export function BillsClient({ bills }: { bills: any[] }) {
                         setDetailsBillId(null);
                     }}
                 />
-            )}
+            ) : null}
 
-            {editBill && (
+            {editBill ? (
                 <EditBillModal
+                    key={editBill.id}
                     bill={editBill}
                     onClose={() => setEditBillId(null)}
                 />
-            )}
+            ) : null}
         </div>
     );
 }

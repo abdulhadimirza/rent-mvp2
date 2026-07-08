@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { processPayment } from './actions';
 import { formatRupees } from '@/lib/utils';
 import { Modal } from '@/components/ui/modal';
@@ -13,7 +13,7 @@ export function PaymentModal({
     bill: any;
     onClose: () => void;
 }) {
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [amountPaidStr, setAmountPaidStr] = useState('0');
     const paid = bill.bill_payments.reduce(
         (acc: number, p: any) => acc + Number(p.amount_paid),
@@ -32,20 +32,20 @@ export function PaymentModal({
         calculatedStatus = 'partial';
     }
 
-    async function handleSave(e: React.SubmitEvent<HTMLFormElement>) {
+    function handleSave(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setLoading(true);
         const formData = new FormData(e.currentTarget);
         formData.append('bill_id', bill.id);
 
-        const result = await processPayment(formData);
+        startTransition(async () => {
+            const result = await processPayment(formData);
 
-        if (result.success) {
-            onClose();
-        } else {
-            alert(result.error);
-        }
-        setLoading(false);
+            if (result.success) {
+                onClose();
+            } else {
+                alert(result.error);
+            }
+        });
     }
 
     return (
@@ -118,17 +118,17 @@ export function PaymentModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        disabled={loading}
+                        disabled={isPending}
                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                     >
                             Close
                     </button>
                     <button
                         type="submit"
-                        disabled={loading || isPaid}
+                        disabled={isPending || isPaid}
                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                     >
-                        {loading ? 'Saving...' : 'Save Payment'}
+                        {isPending ? 'Saving...' : 'Save Payment'}
                     </button>
                 </div>
             </form>

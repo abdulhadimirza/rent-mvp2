@@ -42,6 +42,8 @@ export function DashboardClient({ data }: { data: DashboardData }) {
         recent_activity = []
     } = data;
 
+    const now = new Date();
+
     return (
         <div className="space-y-8">
             {/* Quick Actions Panel */}
@@ -163,11 +165,11 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                                                     <span className="w-24 inline-block">
                                                         {new Date(item.due_date).toLocaleDateString()}
                                                     </span>
-                                                    {new Date(item.due_date) < new Date() && (
+                                                    {new Date(item.due_date) < now ? (
                                                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                                                             Overdue
                                                         </span>
-                                                    )}
+                                                    ) : null}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 font-semibold text-slate-900 whitespace-nowrap">

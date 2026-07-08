@@ -3,10 +3,18 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { RentPaymentModal } from './RentPaymentModal';
-import { RentDetailsModal } from './RentDetailsModal';
-import { EditRentModal } from './EditRentModal';
+import dynamic from 'next/dynamic';
 import { formatRupees } from '@/lib/utils';
+
+const RentPaymentModal = dynamic(() => import('./RentPaymentModal').then((mod) => mod.RentPaymentModal), {
+    ssr: false,
+});
+const RentDetailsModal = dynamic(() => import('./RentDetailsModal').then((mod) => mod.RentDetailsModal), {
+    ssr: false,
+});
+const EditRentModal = dynamic(() => import('./EditRentModal').then((mod) => mod.EditRentModal), {
+    ssr: false,
+});
 
 
 const statusColors: Record<string, string> = {
@@ -108,6 +116,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
 
             {paymentRent && (
                 <RentPaymentModal
+                    key={paymentRent.id}
                     rentCycle={paymentRent}
                     onClose={() => setPaymentRentId(null)}
                 />
@@ -115,6 +124,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
 
             {detailsRent && (
                 <RentDetailsModal
+                    key={detailsRent.id}
                     rentCycle={detailsRent}
                     onClose={() => setDetailsRentId(null)}
                     onRecordPayment={() => {
@@ -130,6 +140,7 @@ export function RentClient({ rentCycles }: { rentCycles: any[] }) {
 
             {editRent && (
                 <EditRentModal
+                    key={editRent.id}
                     rentCycle={editRent}
                     onClose={() => setEditRentId(null)}
                 />

@@ -1,63 +1,35 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useTransition } from 'react';
+import dynamic from 'next/dynamic';
 import { addProperty, addTenant, editProperty, editTenant, deleteProperty, deleteTenant } from './actions';
-import { GlobalRentPaymentModal } from './GlobalRentPaymentModal';
 import { Modal } from '@/components/ui/modal';
 
-export function TenantModals({ properties }: { properties: any[] }) {
-    const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
-    const [isTenantModalOpen, setTenantModalOpen] = useState(false);
+const GlobalRentPaymentModal = dynamic(() => import('./GlobalRentPaymentModal').then((m) => m.GlobalRentPaymentModal), { ssr: false });
 
-    // Edit Modal states
-    const [isEditPropertyModalOpen, setEditPropertyModalOpen] = useState(false);
-    const [isEditTenantModalOpen, setEditTenantModalOpen] = useState(false);
-    const [isGlobalRentModalOpen, setGlobalRentModalOpen] = useState(false);
-
-    const [selectedPropertyId, setSelectedPropertyId] = useState('');
-    const [selectedTenantId, setSelectedTenantId] = useState('');
-
-    // Keep track of which fields are changed (dirty) by the user
+function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
     const [dirtyFields, setDirtyFields] = useState<Record<string, boolean>>({});
-
-    const [loading, setLoading] = useState(false);
-
-    // Reset dirty tracking when switching properties/tenants
-    useEffect(() => {
-        setDirtyFields({});
-    }, [selectedPropertyId, selectedTenantId]);
+    const [isPending, startTransition] = useTransition();
 
     const handleFieldChange = (fieldName: string) => {
         setDirtyFields((prev) => ({ ...prev, [fieldName]: true }));
     };
 
-    async function handleAddProperty(e: React.SubmitEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setLoading(true);
-        const formData = new FormData(e.currentTarget);
-        await addProperty(formData);
-        setLoading(false);
-        setPropertyModalOpen(false);
-    }
-
-    async function handleAddTenant(e: React.SubmitEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setLoading(true);
-        const formData = new FormData(e.currentTarget);
-        await addTenant(formData);
-        setLoading(false);
-        setTenantModalOpen(false);
-    }
+    const getCustomerNumber = (billType: string) => {
+        if (!selectedProperty?.property_customer_numbers) return '';
+        const numbers = Array.isArray(selectedProperty.property_customer_numbers)
+            ? selectedProperty.property_customer_numbers
+            : [selectedProperty.property_customer_numbers];
+        const record = numbers.find((n: any) => n.bill_type === billType);
+        return record ? record.customer_number : '';
+    };
 
     async function handleEditProperty(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        setLoading(true);
-
         const rawFormData = new FormData(e.currentTarget);
         const filteredFormData = new FormData();
-        filteredFormData.append('id', selectedPropertyId);
+        filteredFormData.append('id', selectedProperty.id);
 
         let hasChanges = false;
         if (dirtyFields['name']) {
@@ -81,22 +53,139 @@ export function TenantModals({ properties }: { properties: any[] }) {
             hasChanges = true;
         }
 
-        if (hasChanges) {
-            await editProperty(filteredFormData);
-        }
-
-        setLoading(false);
-        setEditPropertyModalOpen(false);
-        setSelectedPropertyId('');
+        startTransition(async () => {
+            if (hasChanges) {
+                await editProperty(filteredFormData);
+            }
+            onSave();
+        });
     }
+
+    return (
+        <form key={selectedProperty.id} onSubmit={handleEditProperty} className="space-y-4">
+            <input type="hidden" name="id" value={selectedProperty.id} />
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Name
+                </label>
+                <input
+                    required
+                    name="name"
+                    defaultValue={selectedProperty.name}
+                    onChange={() => handleFieldChange('name')}
+                    maxLength={100}
+                    pattern=".*\S.*"
+                    title="Property name cannot be empty or only spaces"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="e.g. Apartment 4B"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Address
+                </label>
+                <input
+                    name="address"
+                    defaultValue={selectedProperty.address || ''}
+                    onChange={() => handleFieldChange('address')}
+                    maxLength={500}
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="Full address"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Electricity Customer Number
+                </label>
+                <input
+                    name="electricity_customer_number"
+                    defaultValue={getCustomerNumber('Electricity')}
+                    onChange={() => handleFieldChange('electricity_customer_number')}
+                    pattern="[0-9]+"
+                    title="Customer number must contain only digits"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="e.g. 0123456789 (Optional)"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Gas Customer Number
+                </label>
+                <input
+                    name="gas_customer_number"
+                    defaultValue={getCustomerNumber('Gas')}
+                    onChange={() => handleFieldChange('gas_customer_number')}
+                    pattern="[0-9]+"
+                    title="Customer number must contain only digits"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="e.g. 0123456789 (Optional)"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Water Customer Number
+                </label>
+                <input
+                    name="water_customer_number"
+                    defaultValue={getCustomerNumber('Water')}
+                    onChange={() => handleFieldChange('water_customer_number')}
+                    pattern="[0-9]+"
+                    title="Customer number must contain only digits"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="e.g. 0123456789 (Optional)"
+                />
+            </div>
+            <div className="flex justify-between items-center mt-6">
+                <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => {
+                        if (window.confirm('Are you sure you want to delete this property? This will also delete all associated tenants and bills.')) {
+                            startTransition(async () => {
+                                await deleteProperty(selectedProperty.id);
+                                onSave();
+                            });
+                        }
+                    }}
+                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
+                >
+                        Delete Property
+                </button>
+                <div className="flex gap-3">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        disabled={isPending}
+                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                    >
+                            Close
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isPending}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        {isPending ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </div>
+        </form>
+    );
+}
+
+function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
+    const [dirtyFields, setDirtyFields] = useState<Record<string, boolean>>({});
+    const [isPending, startTransition] = useTransition();
+
+    const handleFieldChange = (fieldName: string) => {
+        setDirtyFields((prev) => ({ ...prev, [fieldName]: true }));
+    };
 
     async function handleEditTenant(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        setLoading(true);
-
         const rawFormData = new FormData(e.currentTarget);
         const filteredFormData = new FormData();
-        filteredFormData.append('id', selectedTenantId);
+        filteredFormData.append('id', selectedTenant.id);
 
         let hasChanges = false;
         if (dirtyFields['name']) {
@@ -120,17 +209,173 @@ export function TenantModals({ properties }: { properties: any[] }) {
             hasChanges = true;
         }
 
-        if (hasChanges) {
-            await editTenant(filteredFormData);
-        }
-
-        setLoading(false);
-        setEditTenantModalOpen(false);
-        setSelectedTenantId('');
+        startTransition(async () => {
+            if (hasChanges) {
+                await editTenant(filteredFormData);
+            }
+            onSave();
+        });
     }
 
-    // Prepare lists for modals
-    // Properties that don't have any tenants assigned (for Add Tenant dropdown)
+    return (
+        <form key={selectedTenant.id} onSubmit={handleEditTenant} className="space-y-4">
+            <input type="hidden" name="id" value={selectedTenant.id} />
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Name
+                </label>
+                <input
+                    required
+                    name="name"
+                    defaultValue={selectedTenant.name}
+                    onChange={() => handleFieldChange('name')}
+                    maxLength={100}
+                    pattern=".*\S.*"
+                    title="Tenant name cannot be empty or only spaces"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="John Doe"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Phone Number
+                </label>
+                <input
+                    required
+                    name="phone_number"
+                    defaultValue={selectedTenant.phone_number}
+                    onChange={() => handleFieldChange('phone_number')}
+                    maxLength={20}
+                    pattern="^\+?[0-9]{7,15}$"
+                    title="Valid phone number (7-15 digits, optional + prefix)"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="+923001234567"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Property Assignment
+                </label>
+                <select
+                    required
+                    name="property_id"
+                    defaultValue={selectedTenant.property_id}
+                    onChange={() => handleFieldChange('property_id')}
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                >
+                    <option value="">Select a property</option>
+                    {properties
+                        .filter((p: any) => {
+                            const tenants = Array.isArray(p.tenants) ? p.tenants : p.tenants ? [p.tenants] : [];
+                            return tenants.length === 0 || p.id === selectedTenant.property_id;
+                        })
+                        .map((p: any) => (
+                            <option key={p.id} value={p.id}>
+                                {p.name}
+                            </option>
+                        ))}
+                </select>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Rent Amount
+                </label>
+                <input
+                    required
+                    name="rent_amount"
+                    type="number"
+                    step="0.01"
+                    defaultValue={selectedTenant.rent_amount}
+                    onChange={() => handleFieldChange('rent_amount')}
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="1000.00"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Monthly Due Day
+                </label>
+                <input
+                    required
+                    name="due_date_day"
+                    type="number"
+                    min="1"
+                    max="31"
+                    defaultValue={selectedTenant.due_date_day}
+                    onChange={() => handleFieldChange('due_date_day')}
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
+                    placeholder="5"
+                />
+            </div>
+            <div className="flex justify-between items-center mt-6">
+                <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => {
+                        if (window.confirm('Are you sure you want to delete this tenant?')) {
+                            startTransition(async () => {
+                                await deleteTenant(selectedTenant.id);
+                                onSave();
+                            });
+                        }
+                    }}
+                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
+                >
+                        Delete Tenant
+                </button>
+                <div className="flex gap-3">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        disabled={isPending}
+                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
+                    >
+                            Close
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isPending}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        {isPending ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </div>
+        </form>
+    );
+}
+
+export function TenantModals({ properties }: { properties: any[] }) {
+    const [isPropertyModalOpen, setPropertyModalOpen] = useState(false);
+    const [isTenantModalOpen, setTenantModalOpen] = useState(false);
+
+    const [isEditPropertyModalOpen, setEditPropertyModalOpen] = useState(false);
+    const [isEditTenantModalOpen, setEditTenantModalOpen] = useState(false);
+    const [isGlobalRentModalOpen, setGlobalRentModalOpen] = useState(false);
+
+    const [selectedPropertyId, setSelectedPropertyId] = useState('');
+    const [selectedTenantId, setSelectedTenantId] = useState('');
+
+    const [isPending, startTransition] = useTransition();
+
+    function handleAddProperty(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        startTransition(async () => {
+            await addProperty(formData);
+            setPropertyModalOpen(false);
+        });
+    }
+
+    function handleAddTenant(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        startTransition(async () => {
+            await addTenant(formData);
+            setTenantModalOpen(false);
+        });
+    }
+
     const availableProperties = properties.filter((p) => {
         const tenants = Array.isArray(p.tenants) ? p.tenants : p.tenants ? [p.tenants] : [];
         return tenants.length === 0;
@@ -143,16 +388,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
 
     const selectedProperty = properties.find((p) => p.id === selectedPropertyId);
     const selectedTenant = allTenants.find((t) => t.id === selectedTenantId);
-
-    // Get existing customer numbers for the selected property
-    const getCustomerNumber = (billType: string) => {
-        if (!selectedProperty?.property_customer_numbers) return '';
-        const numbers = Array.isArray(selectedProperty.property_customer_numbers)
-            ? selectedProperty.property_customer_numbers
-            : [selectedProperty.property_customer_numbers];
-        const record = numbers.find((n: any) => n.bill_type === billType);
-        return record ? record.customer_number : '';
-    };
 
     return (
         <>
@@ -181,7 +416,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     onClick={() => {
                         setSelectedPropertyId('');
                         setEditPropertyModalOpen(true);
-                        setDirtyFields({});
                     }}
                     className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
@@ -191,7 +425,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     onClick={() => {
                         setSelectedTenantId('');
                         setEditTenantModalOpen(true);
-                        setDirtyFields({});
                     }}
                     className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
                 >
@@ -199,7 +432,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
                 </button>
             </div>
 
-            {/* ADD PROPERTY MODAL */}
             {isPropertyModalOpen && (
                 <Modal title="Add Property">
                     <form onSubmit={handleAddProperty} className="space-y-4">
@@ -268,24 +500,23 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             <button
                                 type="button"
                                 onClick={() => setPropertyModalOpen(false)}
-                                disabled={loading}
+                                disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
                                     Close
                             </button>
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={isPending}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                             >
-                                {loading ? 'Saving...' : 'Save Property'}
+                                {isPending ? 'Saving...' : 'Save Property'}
                             </button>
                         </div>
                     </form>
                 </Modal>
             )}
 
-            {/* EDIT PROPERTY MODAL */}
             {isEditPropertyModalOpen && (
                 <Modal title="Edit Property">
                     {properties.length === 0 ? (
@@ -311,118 +542,18 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     )}
 
                     {selectedProperty && (
-                        <form key={selectedProperty.id} onSubmit={handleEditProperty} className="space-y-4">
-                            <input type="hidden" name="id" value={selectedProperty.id} />
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
-                                </label>
-                                <input
-                                    required
-                                    name="name"
-                                    defaultValue={selectedProperty.name}
-                                    onChange={() => handleFieldChange('name')}
-                                    maxLength={100}
-                                    pattern=".*\S.*"
-                                    title="Property name cannot be empty or only spaces"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="e.g. Apartment 4B"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Address
-                                </label>
-                                <input
-                                    name="address"
-                                    defaultValue={selectedProperty.address || ''}
-                                    onChange={() => handleFieldChange('address')}
-                                    maxLength={500}
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="Full address"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Electricity Customer Number
-                                </label>
-                                <input
-                                    name="electricity_customer_number"
-                                    defaultValue={getCustomerNumber('Electricity')}
-                                    onChange={() => handleFieldChange('electricity_customer_number')}
-                                    pattern="[0-9]+"
-                                    title="Customer number must contain only digits"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="e.g. 0123456789 (Optional)"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Gas Customer Number
-                                </label>
-                                <input
-                                    name="gas_customer_number"
-                                    defaultValue={getCustomerNumber('Gas')}
-                                    onChange={() => handleFieldChange('gas_customer_number')}
-                                    pattern="[0-9]+"
-                                    title="Customer number must contain only digits"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="e.g. 0123456789 (Optional)"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Water Customer Number
-                                </label>
-                                <input
-                                    name="water_customer_number"
-                                    defaultValue={getCustomerNumber('Water')}
-                                    onChange={() => handleFieldChange('water_customer_number')}
-                                    pattern="[0-9]+"
-                                    title="Customer number must contain only digits"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="e.g. 0123456789 (Optional)"
-                                />
-                            </div>
-                            <div className="flex justify-between items-center mt-6">
-                                <button
-                                    type="button"
-                                    disabled={loading}
-                                    onClick={async () => {
-                                        if (window.confirm('Are you sure you want to delete this property? This will also delete all associated tenants and bills.')) {
-                                            setLoading(true);
-                                            await deleteProperty(selectedProperty.id);
-                                            setLoading(false);
-                                            setEditPropertyModalOpen(false);
-                                            setSelectedPropertyId('');
-                                        }
-                                    }}
-                                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
-                                >
-                                        Delete Property
-                                </button>
-                                <div className="flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setEditPropertyModalOpen(false);
-                                            setSelectedPropertyId('');
-                                        }}
-                                        disabled={loading}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
-                                    >
-                                            Close
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                    >
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        <EditPropertyForm 
+                            key={selectedProperty.id} 
+                            selectedProperty={selectedProperty} 
+                            onSave={() => {
+                                setEditPropertyModalOpen(false);
+                                setSelectedPropertyId('');
+                            }}
+                            onClose={() => {
+                                setEditPropertyModalOpen(false);
+                                setSelectedPropertyId('');
+                            }}
+                        />
                     )}
 
                     {!selectedProperty && (
@@ -433,7 +564,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     setEditPropertyModalOpen(false);
                                     setSelectedPropertyId('');
                                 }}
-                                disabled={loading}
+                                disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
                                     Close
@@ -443,7 +574,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
                 </Modal>
             )}
 
-            {/* ADD TENANT MODAL */}
             {isTenantModalOpen && (
                 <Modal title="Add Tenant">
                     {availableProperties.length === 0 ? (
@@ -526,17 +656,17 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 <button
                                     type="button"
                                     onClick={() => setTenantModalOpen(false)}
-                                    disabled={loading}
+                                    disabled={isPending}
                                     className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
                                         Close
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={isPending}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                                 >
-                                    {loading ? 'Saving...' : 'Save Tenant'}
+                                    {isPending ? 'Saving...' : 'Save Tenant'}
                                 </button>
                             </div>
                         </form>
@@ -546,7 +676,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             <button
                                 type="button"
                                 onClick={() => setTenantModalOpen(false)}
-                                disabled={loading}
+                                disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
                                     Close
@@ -556,7 +686,6 @@ export function TenantModals({ properties }: { properties: any[] }) {
                 </Modal>
             )}
 
-            {/* EDIT TENANT MODAL */}
             {isEditTenantModalOpen && (
                 <Modal title="Edit Tenant">
                     {allTenants.length === 0 ? (
@@ -582,135 +711,19 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     )}
 
                     {selectedTenant && (
-                        <form key={selectedTenant.id} onSubmit={handleEditTenant} className="space-y-4">
-                            <input type="hidden" name="id" value={selectedTenant.id} />
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
-                                </label>
-                                <input
-                                    required
-                                    name="name"
-                                    defaultValue={selectedTenant.name}
-                                    onChange={() => handleFieldChange('name')}
-                                    maxLength={100}
-                                    pattern=".*\S.*"
-                                    title="Tenant name cannot be empty or only spaces"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="John Doe"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Phone Number
-                                </label>
-                                <input
-                                    required
-                                    name="phone_number"
-                                    defaultValue={selectedTenant.phone_number}
-                                    onChange={() => handleFieldChange('phone_number')}
-                                    maxLength={20}
-                                    pattern="^\+?[0-9]{7,15}$"
-                                    title="Valid phone number (7-15 digits, optional + prefix)"
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="+923001234567"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Property Assignment
-                                </label>
-                                <select
-                                    required
-                                    name="property_id"
-                                    defaultValue={selectedTenant.property_id}
-                                    onChange={() => handleFieldChange('property_id')}
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                >
-                                    <option value="">Select a property</option>
-                                    {/* Show available properties PLUS the property currently assigned to this tenant */}
-                                    {properties
-                                        .filter((p) => {
-                                            const tenants = Array.isArray(p.tenants) ? p.tenants : p.tenants ? [p.tenants] : [];
-                                            return tenants.length === 0 || p.id === selectedTenant.property_id;
-                                        })
-                                        .map((p) => (
-                                            <option key={p.id} value={p.id}>
-                                                {p.name}
-                                            </option>
-                                        ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Rent Amount
-                                </label>
-                                <input
-                                    required
-                                    name="rent_amount"
-                                    type="number"
-                                    step="0.01"
-                                    defaultValue={selectedTenant.rent_amount}
-                                    onChange={() => handleFieldChange('rent_amount')}
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="1000.00"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Monthly Due Day
-                                </label>
-                                <input
-                                    required
-                                    name="due_date_day"
-                                    type="number"
-                                    min="1"
-                                    max="31"
-                                    defaultValue={selectedTenant.due_date_day}
-                                    onChange={() => handleFieldChange('due_date_day')}
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900"
-                                    placeholder="5"
-                                />
-                            </div>
-                            <div className="flex justify-between items-center mt-6">
-                                <button
-                                    type="button"
-                                    disabled={loading}
-                                    onClick={async () => {
-                                        if (window.confirm('Are you sure you want to delete this tenant?')) {
-                                            setLoading(true);
-                                            await deleteTenant(selectedTenant.id);
-                                            setLoading(false);
-                                            setEditTenantModalOpen(false);
-                                            setSelectedTenantId('');
-                                        }
-                                    }}
-                                    className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
-                                >
-                                        Delete Tenant
-                                </button>
-                                <div className="flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setEditTenantModalOpen(false);
-                                            setSelectedTenantId('');
-                                        }}
-                                        disabled={loading}
-                                        className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
-                                    >
-                                            Close
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                                    >
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        <EditTenantForm 
+                            key={selectedTenant.id} 
+                            selectedTenant={selectedTenant} 
+                            properties={properties}
+                            onSave={() => {
+                                setEditTenantModalOpen(false);
+                                setSelectedTenantId('');
+                            }}
+                            onClose={() => {
+                                setEditTenantModalOpen(false);
+                                setSelectedTenantId('');
+                            }}
+                        />
                     )}
 
                     {!selectedTenant && (
@@ -721,7 +734,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     setEditTenantModalOpen(false);
                                     setSelectedTenantId('');
                                 }}
-                                disabled={loading}
+                                disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
                                     Close
@@ -730,7 +743,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     )}
                 </Modal>
             )}
-            {/* GLOBAL RENT PAYMENT MODAL */}
+            
             {isGlobalRentModalOpen && (
                 <GlobalRentPaymentModal
                     tenants={allTenants}
