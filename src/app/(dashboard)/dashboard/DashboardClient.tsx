@@ -47,20 +47,20 @@ export function DashboardClient({ data }: { data: DashboardData }) {
     return (
         <div className="space-y-8">
             {/* Quick Actions Panel */}
-            <div className="flex flex-wrap items-center gap-3">
-                <Link href="/rent" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-3">
+                <Link href="/rent" className="flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
                     <Home className="w-4 h-4 text-blue-600" />
                     Record Rent
                 </Link>
-                <Link href="/upload" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
+                <Link href="/upload" className="flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
                     <FileText className="w-4 h-4 text-indigo-600" />
                     Upload Bill
                 </Link>
-                <Link href="/bills" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
+                <Link href="/bills" className="flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
                     <Receipt className="w-4 h-4 text-emerald-600" />
                     View Bills
                 </Link>
-                <Link href="/tenants" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
+                <Link href="/tenants" className="flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium">
                     <Users className="w-4 h-4 text-slate-600" />
                     Manage Tenants
                 </Link>

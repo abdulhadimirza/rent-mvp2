@@ -35,7 +35,10 @@ export async function signup(formData: FormData) {
 
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    const origin = (await headers()).get('origin');
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const origin = headersList.get('origin') || `${protocol}://${host}`;
 
     const { error } = await supabase.auth.signUp({
         email,

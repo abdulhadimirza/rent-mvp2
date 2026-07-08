@@ -391,23 +391,23 @@ export function TenantModals({ properties }: { properties: any[] }) {
 
     return (
         <>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-3 mb-6">
                 <button
                     onClick={() => setGlobalRentModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
+                    className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Record Rent Payment
                 </button>
 
                 <button
                     onClick={() => setPropertyModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
+                    className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Add Property
                 </button>
                 <button
                     onClick={() => setTenantModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
+                    className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Add Tenant
                 </button>
@@ -417,7 +417,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         setSelectedPropertyId('');
                         setEditPropertyModalOpen(true);
                     }}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
+                    className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Edit Property
                 </button>
@@ -426,7 +426,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         setSelectedTenantId('');
                         setEditTenantModalOpen(true);
                     }}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
+                    className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Edit Tenant
                 </button>
