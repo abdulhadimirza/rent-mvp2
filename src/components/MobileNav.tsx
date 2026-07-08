@@ -44,7 +44,7 @@ export function MobileNav() {
                         
                         <div className="pt-2 mt-2 border-t border-slate-200 pb-2">
                             <form action="/auth/signout" method="post">
-                                <button type="submit" className="flex w-full items-center px-3 py-3 text-slate-700 rounded-md hover:bg-slate-100 group">
+                                <button type="submit" className="flex w-full items-center px-3 py-3 text-slate-700 rounded-md hover:bg-slate-100 group cursor-pointer">
                                     <LogOut className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
                                     Sign out
                                 </button>

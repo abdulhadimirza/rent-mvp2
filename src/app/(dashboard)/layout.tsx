@@ -60,7 +60,7 @@ export default async function DashboardLayout({
                     <form action="/auth/signout" method="post">
                         <button
                             type="submit"
-                            className="flex w-full items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 group"
+                            className="flex w-full items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 group cursor-pointer"
                         >
                             <LogOut className="mr-3 h-4 w-4 text-slate-400 group-hover:text-slate-500" />
                             Sign out
