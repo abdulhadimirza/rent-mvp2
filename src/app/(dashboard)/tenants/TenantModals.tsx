@@ -66,7 +66,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
             <input type="hidden" name="id" value={selectedProperty.id} />
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Name
+                    Name
                 </label>
                 <input
                     required
@@ -82,7 +82,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Address
+                    Address
                 </label>
                 <input
                     name="address"
@@ -95,7 +95,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Electricity Customer Number
+                    Electricity Customer Number
                 </label>
                 <input
                     name="electricity_customer_number"
@@ -109,7 +109,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Gas Customer Number
+                    Gas Customer Number
                 </label>
                 <input
                     name="gas_customer_number"
@@ -123,7 +123,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Water Customer Number
+                    Water Customer Number
                 </label>
                 <input
                     name="water_customer_number"
@@ -149,7 +149,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
                     }}
                     className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                 >
-                        Delete Property
+                    Delete Property
                 </button>
                 <div className="flex gap-3">
                     <button
@@ -158,7 +158,7 @@ function EditPropertyForm({ selectedProperty, onSave, onClose }: any) {
                         disabled={isPending}
                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                     >
-                            Close
+                        Close
                     </button>
                     <button
                         type="submit"
@@ -222,7 +222,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
             <input type="hidden" name="id" value={selectedTenant.id} />
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Name
+                    Name
                 </label>
                 <input
                     required
@@ -238,7 +238,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Phone Number
+                    Phone Number
                 </label>
                 <input
                     required
@@ -254,7 +254,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Property Assignment
+                    Property Assignment
                 </label>
                 <select
                     required
@@ -278,7 +278,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Rent Amount
+                    Rent Amount
                 </label>
                 <input
                     required
@@ -293,7 +293,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Monthly Due Day
+                    Monthly Due Day
                 </label>
                 <input
                     required
@@ -321,7 +321,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
                     }}
                     className="px-4 py-2 text-red-600 hover:text-red-800 font-medium disabled:opacity-50 transition-colors"
                 >
-                        Delete Tenant
+                    Delete Tenant
                 </button>
                 <div className="flex gap-3">
                     <button
@@ -330,7 +330,7 @@ function EditTenantForm({ selectedTenant, properties, onSave, onClose }: any) {
                         disabled={isPending}
                         className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                     >
-                            Close
+                        Close
                     </button>
                     <button
                         type="submit"
@@ -394,20 +394,20 @@ export function TenantModals({ properties }: { properties: any[] }) {
             <div className="flex items-center gap-3 mb-6">
                 <button
                     onClick={() => setGlobalRentModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Record Rent Payment
                 </button>
 
                 <button
                     onClick={() => setPropertyModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Add Property
                 </button>
                 <button
                     onClick={() => setTenantModalOpen(true)}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Add Tenant
                 </button>
@@ -417,7 +417,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         setSelectedPropertyId('');
                         setEditPropertyModalOpen(true);
                     }}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Edit Property
                 </button>
@@ -426,7 +426,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         setSelectedTenantId('');
                         setEditTenantModalOpen(true);
                     }}
-                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-md hover:bg-slate-50 transition-colors shadow-sm font-medium cursor-pointer"
                 >
                     Edit Tenant
                 </button>
@@ -437,7 +437,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     <form onSubmit={handleAddProperty} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Name
+                                Name
                             </label>
                             <input
                                 required
@@ -451,7 +451,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Address
+                                Address
                             </label>
                             <input
                                 name="address"
@@ -462,7 +462,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Electricity Customer Number
+                                Electricity Customer Number
                             </label>
                             <input
                                 name="electricity_customer_number"
@@ -474,7 +474,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Gas Customer Number
+                                Gas Customer Number
                             </label>
                             <input
                                 name="gas_customer_number"
@@ -486,7 +486,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Water Customer Number
+                                Water Customer Number
                             </label>
                             <input
                                 name="water_customer_number"
@@ -503,7 +503,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
-                                    Close
+                                Close
                             </button>
                             <button
                                 type="submit"
@@ -524,7 +524,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     ) : (
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Select Property to Edit
+                                Select Property to Edit
                             </label>
                             <select
                                 value={selectedPropertyId}
@@ -542,9 +542,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     )}
 
                     {selectedProperty && (
-                        <EditPropertyForm 
-                            key={selectedProperty.id} 
-                            selectedProperty={selectedProperty} 
+                        <EditPropertyForm
+                            key={selectedProperty.id}
+                            selectedProperty={selectedProperty}
                             onSave={() => {
                                 setEditPropertyModalOpen(false);
                                 setSelectedPropertyId('');
@@ -567,7 +567,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
-                                    Close
+                                Close
                             </button>
                         </div>
                     )}
@@ -582,7 +582,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                         <form onSubmit={handleAddTenant} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Name
+                                    Name
                                 </label>
                                 <input
                                     required
@@ -596,7 +596,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Phone Number
+                                    Phone Number
                                 </label>
                                 <input
                                     required
@@ -610,7 +610,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Property Assignment
+                                    Property Assignment
                                 </label>
                                 <select
                                     required
@@ -627,7 +627,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Rent Amount
+                                    Rent Amount
                                 </label>
                                 <input
                                     required
@@ -640,7 +640,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Monthly Due Day
+                                    Monthly Due Day
                                 </label>
                                 <input
                                     required
@@ -659,7 +659,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                     disabled={isPending}
                                     className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                                 >
-                                        Close
+                                    Close
                                 </button>
                                 <button
                                     type="submit"
@@ -679,7 +679,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
-                                    Close
+                                Close
                             </button>
                         </div>
                     )}
@@ -693,7 +693,7 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     ) : (
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Select Tenant to Edit
+                                Select Tenant to Edit
                             </label>
                             <select
                                 value={selectedTenantId}
@@ -711,9 +711,9 @@ export function TenantModals({ properties }: { properties: any[] }) {
                     )}
 
                     {selectedTenant && (
-                        <EditTenantForm 
-                            key={selectedTenant.id} 
-                            selectedTenant={selectedTenant} 
+                        <EditTenantForm
+                            key={selectedTenant.id}
+                            selectedTenant={selectedTenant}
                             properties={properties}
                             onSave={() => {
                                 setEditTenantModalOpen(false);
@@ -737,13 +737,13 @@ export function TenantModals({ properties }: { properties: any[] }) {
                                 disabled={isPending}
                                 className="px-4 py-2 text-slate-600 hover:text-slate-800 disabled:opacity-50"
                             >
-                                    Close
+                                Close
                             </button>
                         </div>
                     )}
                 </Modal>
             )}
-            
+
             {isGlobalRentModalOpen && (
                 <GlobalRentPaymentModal
                     tenants={allTenants}
