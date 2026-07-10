@@ -14,7 +14,7 @@ export default async function DashboardLayout({
             {/* Sidebar */}
             <aside className="w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
                 <div className="h-16 flex items-center px-6 border-b border-slate-200">
-                    <h1 className="text-xl font-bold text-slate-800">Rent MVP</h1>
+                    <h1 className="text-xl font-bold text-slate-800">Rent Reminder</h1>
                 </div>
 
                 <SidebarNav />

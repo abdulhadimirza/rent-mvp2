@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Rent MVP',
-        short_name: 'Rent MVP',
-        description: 'Automate rent reminders and track payments.',
+        name: 'Rent Reminder',
+        short_name: 'Rent Reminder',
+        description: 'Automate Rent Reminder and track payments.',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',

@@ -19,7 +19,7 @@ export function MobileNav() {
 
     return (
         <header className="md:hidden flex items-center justify-between bg-white border-b border-slate-200 p-4 shrink-0 relative z-50">
-            <h1 className="text-xl font-bold text-slate-800">Rent MVP</h1>
+            <h1 className="text-xl font-bold text-slate-800">Rent Reminder</h1>
             <button 
                 onClick={() => setIsOpen(!isOpen)} 
                 className="text-slate-600 hover:text-slate-800 focus:outline-none"

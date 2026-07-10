@@ -19,7 +19,7 @@ export default async function LoginPage(props: {
                         <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-blue-600 shadow-md">
                             <Home className="w-6 h-6" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight">Rent MVP</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">Rent Reminder</h1>
                     </div>
                     <h2 className="text-4xl font-extrabold mb-6 leading-tight text-white">
                         Modern Property Management
@@ -30,15 +30,15 @@ export default async function LoginPage(props: {
                     <div className="space-y-5">
                         <div className="flex items-center gap-4">
                             <div className="w-8 h-8 rounded-full bg-blue-500/40 flex items-center justify-center text-sm font-bold border border-blue-400/30">✓</div>
-                            <span className="font-medium">Automated Rent Tracking</span>
+                            <span className="font-medium">Rent & Utility Bill Tracking</span>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="w-8 h-8 rounded-full bg-blue-500/40 flex items-center justify-center text-sm font-bold border border-blue-400/30">✓</div>
-                            <span className="font-medium">Utility Bill Management</span>
+                            <span className="font-medium">Automated Monthly Rent Reminder</span>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="w-8 h-8 rounded-full bg-blue-500/40 flex items-center justify-center text-sm font-bold border border-blue-400/30">✓</div>
-                            <span className="font-medium">Tenant Portfolio Insights</span>
+                            <span className="font-medium">Automatic Extraction of Bill Details</span>
                         </div>
                     </div>
                 </div>

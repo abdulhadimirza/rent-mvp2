@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://rent-mvp2.vercel.app/'),
     title: {
-        default: 'Rent MVP',
-        template: '%s | Rent MVP',
+        default: 'Rent Reminder',
+        template: '%s | Rent Reminder',
     },
-    description: 'Automate rent reminders and track payments.',
+    description: 'Automate Rent Reminder and track payments.',
     keywords: ['rent', 'properties', 'real estate', 'apartments', 'homes'],
     authors: [{ name: 'Abdul Hadi Mirza' }],
     creator: 'Abdul Hadi Mirza',
@@ -29,17 +29,17 @@ export const metadata: Metadata = {
         telephone: false,
     },
     openGraph: {
-        title: 'Rent MVP',
-        description: 'Automate rent reminders and track payments.',
+        title: 'Rent Reminder',
+        description: 'Automate Rent Reminder and track payments.',
         url: 'https://rent-mvp2.vercel.app/',
-        siteName: 'Rent MVP',
+        siteName: 'Rent Reminder',
         locale: 'en_US',
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Rent MVP',
-        description: 'Automate rent reminders and track payments.',
+        title: 'Rent Reminder',
+        description: 'Automate Rent Reminder and track payments.',
         creator: '@rentmvp',
     },
 };
