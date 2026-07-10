@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { Home, Users, Upload, LogOut, FileText, Wallet } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { MobileNav } from '@/components/MobileNav';
+import { SidebarNav } from '@/components/SidebarNav';
 
 export default async function DashboardLayout({
     children,
@@ -17,44 +17,7 @@ export default async function DashboardLayout({
                     <h1 className="text-xl font-bold text-slate-800">Rent MVP</h1>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                    <Link
-                        href="/dashboard"
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <Home className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Dashboard
-                    </Link>
-                    <Link
-                        href="/tenants"
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <Users className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Tenants & Properties
-                    </Link>
-                    <Link
-                        href="/rent"
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <Wallet className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Rent Tracking
-                    </Link>
-                    <Link
-                        href="/bills"
-                        prefetch={false}
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <FileText className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Utility Bills
-                    </Link>
-                    <Link
-                        href="/upload"
-                        className="flex items-center px-3 py-2 text-slate-700 rounded-md hover:bg-slate-100 group"
-                    >
-                        <Upload className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                        Upload Bill
-                    </Link>
-                </nav>
+                <SidebarNav />
 
                 <div className="p-4 border-t border-slate-200">
                     <form action="/auth/signout" method="post">
