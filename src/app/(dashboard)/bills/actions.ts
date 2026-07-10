@@ -39,60 +39,6 @@ export async function processPayment(formData: FormData) {
     return { success: true };
 }
 
-export async function sendWhatsAppReminder(billId: string) {
-    const supabase = await createClient();
-
-    // Fetch bill and tenant details
-    const { data: bill } = await supabase
-        .from('bills')
-        .select('*, tenants(name, phone_number)')
-        .eq('id', billId)
-        .single();
-
-    if (!bill) return { error: 'Bill not found' };
-
-    const tenant = bill.tenants as any;
-    const phone = tenant.phone_number;
-
-    const payload = {
-        messaging_product: 'whatsapp',
-        to: phone,
-        type: 'template',
-        template: {
-            name: 'payment_reminder',
-            language: { code: 'en_US' },
-            components: [
-                {
-                    type: 'body',
-                    parameters: [
-                        { type: 'text', text: tenant.name },
-                        { type: 'text', text: bill.bill_type },
-                        { type: 'text', text: formatRupees(bill.amount_due) },
-
-                        {
-                            type: 'text',
-                            text: new Date(bill.due_date).toLocaleDateString(),
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-
-    // Mocking the request as requested by the user
-    console.log('--- WHATSAPP MOCK API REQUEST ---');
-    console.log(
-        `Endpoint: https://graph.facebook.com/v20.0/WHATSAPP_PHONE_NUMBER_ID/messages`,
-    );
-    console.log('Payload:', JSON.stringify(payload, null, 2));
-    console.log('-----------------------------------');
-
-    // Artificial delay to simulate network request
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    return { success: true };
-}
-
 export async function editBill(formData: FormData) {
     const supabase = await createClient();
 
@@ -150,5 +96,19 @@ export async function deleteBillPayment(paymentId: string) {
     }
 
     revalidatePath('/bills');
+    return { success: true };
+}
+
+export async function sendWhatsAppReminder(billId: string) {
+    // Mocking the request for now
+    console.log('--- WHATSAPP MOCK API REQUEST ---');
+    console.log(
+        `Endpoint: https://graph.facebook.com/v20.0/WHATSAPP_PHONE_NUMBER_ID/messages`,
+    );
+    console.log('-----------------------------------');
+
+    // Artificial delay to simulate network request
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     return { success: true };
 }
