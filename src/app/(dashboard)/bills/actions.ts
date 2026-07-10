@@ -3,7 +3,6 @@
 
 import { createClient } from '@/lib/server';
 import { revalidatePath } from 'next/cache';
-import { formatRupees } from '@/lib/utils';
 import { processBillPaymentSchema, editBillSchema } from '@/lib/schemas';
 
 export async function processPayment(formData: FormData) {
