@@ -16,6 +16,6 @@ export const config = {
          * - favicon.ico (favicon file)
          * - All assets ending in common extensions (svg, png, jpg, etc.)
          */
-        '/((?!api/inngest|x/inngest|\\.netlify/functions/inngest|\\.redwood/functions/inngest|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api/inngest|api/cron|x/inngest|\\.netlify/functions/inngest|\\.redwood/functions/inngest|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };
