@@ -1,6 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-.agents/
+/.agents
+/sample-pdfs
+/.codebase-memory/
 
 # Supabase generated types
 types/supabase.ts
